@@ -1,115 +1,158 @@
 import { useState } from 'react';
-import { mockDogs } from '@/data/mockDogs';
+import { mockDogs, userLocation } from '@/data/mockDogs';
 import DogCard from '@/components/DogCard';
 import { Button } from '@/components/ui/button';
-import { Heart, User, MessageSquare, Settings } from 'lucide-react';
-import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Heart, User, Settings, Search } from 'lucide-react';
+import { calculateDistance } from '@/lib/distance';
 
 const Browse = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [matches, setMatches] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const currentDog = mockDogs[currentIndex];
+  // Calculate distances and sort by proximity
+  const dogsWithDistance = mockDogs.map(dog => ({
+    ...dog,
+    distance: calculateDistance(
+      userLocation.lat,
+      userLocation.lng,
+      dog.location.lat,
+      dog.location.lng
+    ),
+  }));
 
-  const handleAccept = () => {
-    if (currentDog) {
-      toast.success(`It's a match with ${currentDog.name}! 🎉`, {
-        description: "You can now start planning playdates together",
-      });
-      setMatches([...matches, currentDog.id]);
-      nextDog();
-    }
-  };
+  // For You section - closest dogs
+  const forYouDogs = [...dogsWithDistance]
+    .sort((a, b) => a.distance - b.distance)
+    .slice(0, 3);
 
-  const handleDecline = () => {
-    if (currentDog) {
-      toast.info(`Passed on ${currentDog.name}`, {
-        description: "Don't worry, there are more puppers to meet!",
-      });
-      nextDog();
-    }
-  };
-
-  const nextDog = () => {
-    if (currentIndex < mockDogs.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      toast.success("You've seen all available dogs in your area!", {
-        description: "Check back later for more matches",
-      });
-    }
-  };
+  // All listings
+  const allDogs = searchQuery
+    ? dogsWithDistance.filter(dog =>
+        dog.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        dog.traits.breed.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : dogsWithDistance;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Heart className="h-8 w-8 text-primary fill-primary" />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-[hsl(340_82%_62%)] bg-clip-text text-transparent">
-              Dog Dates
-            </h1>
+      <header className="border-b bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <Heart className="h-7 w-7 text-primary fill-primary" />
+              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-[hsl(340_82%_62%)] bg-clip-text text-transparent">
+                Dog Dates
+              </h1>
+            </div>
+
+            {/* Search Bar */}
+            <div className="hidden sm:flex flex-1 max-w-md mx-4">
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search by name or breed..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-muted/50"
+                />
+              </div>
+            </div>
+
+            <nav className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="hover-scale">
+                <User className="w-5 h-5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="hover-scale">
+                <Settings className="w-5 h-5" />
+              </Button>
+            </nav>
           </div>
 
-          <nav className="flex items-center gap-2">
-            <Button variant="ghost" size="icon">
-              <MessageSquare className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <User className="w-5 h-5" />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Settings className="w-5 h-5" />
-            </Button>
-          </nav>
+          {/* Mobile Search */}
+          <div className="sm:hidden mt-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-muted/50"
+              />
+            </div>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
-          {currentIndex < mockDogs.length ? (
-            <div className="w-full max-w-md space-y-6">
-              <div className="text-center space-y-2">
-                <h2 className="text-2xl font-semibold">
-                  Dog {currentIndex + 1} of {mockDogs.length}
-                </h2>
-                <p className="text-muted-foreground">
-                  {matches.length} match{matches.length !== 1 ? "es" : ""} so far!
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Location Banner */}
+        <div className="mb-8 animate-fade-in">
+          <p className="text-sm text-muted-foreground mb-1">Your location</p>
+          <h2 className="text-2xl sm:text-3xl font-bold">
+            {userLocation.city}, {userLocation.state}
+          </h2>
+        </div>
+
+        {/* For You Section */}
+        {!searchQuery && (
+          <section className="mb-12 animate-fade-in">
+            <div className="flex items-baseline justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold mb-1">For You</h2>
+                <p className="text-sm text-muted-foreground">
+                  Dogs closest to you in {userLocation.city}
                 </p>
               </div>
+            </div>
 
-              <DogCard
-                dog={currentDog}
-                onAccept={handleAccept}
-                onDecline={handleDecline}
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {forYouDogs.map((dog, index) => (
+                <div
+                  key={dog.id}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <DogCard dog={dog} distance={dog.distance} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
-              {/* Map Placeholder */}
-              <div className="bg-muted/50 rounded-lg p-6 text-center space-y-2">
-                <p className="text-sm font-medium">📍 Approximate Location</p>
-                <p className="text-xs text-muted-foreground">
-                  Google Maps integration coming soon
-                </p>
-                <p className="text-sm">
-                  {currentDog.location.city}, {currentDog.location.state}
-                </p>
-              </div>
+        {/* All Listings */}
+        <section className="animate-fade-in">
+          <div className="flex items-baseline justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold mb-1">
+                {searchQuery ? 'Search Results' : 'All Nearby Dogs'}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {allDogs.length} dog{allDogs.length !== 1 ? 's' : ''} available
+              </p>
+            </div>
+          </div>
+
+          {allDogs.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {allDogs.map((dog, index) => (
+                <div
+                  key={dog.id}
+                  className="animate-fade-in"
+                  style={{ animationDelay: `${index * 50}ms` }}
+                >
+                  <DogCard dog={dog} distance={dog.distance} />
+                </div>
+              ))}
             </div>
           ) : (
-            <div className="text-center space-y-4">
-              <div className="text-6xl mb-4">🐕</div>
-              <h2 className="text-3xl font-bold">That's all for now!</h2>
-              <p className="text-muted-foreground max-w-md">
-                You've seen all the dogs in your area. Check back later for more potential playmates!
-              </p>
-              <Button variant="hero" onClick={() => setCurrentIndex(0)}>
-                See Dogs Again
-              </Button>
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No dogs found matching your search.</p>
             </div>
           )}
-        </div>
+        </section>
       </main>
     </div>
   );

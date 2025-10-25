@@ -1,103 +1,81 @@
 import { DogProfile } from '@/types/dog';
-import { MapPin, Heart, X } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { formatDistance } from '@/lib/distance';
 
 interface DogCardProps {
   dog: DogProfile;
-  onAccept: () => void;
-  onDecline: () => void;
+  distance?: number;
 }
 
-const DogCard = ({ dog, onAccept, onDecline }: DogCardProps) => {
+const DogCard = ({ dog, distance }: DogCardProps) => {
   return (
-    <Card className="overflow-hidden shadow-2xl border-2 max-w-md w-full mx-auto">
+    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group">
       {/* Image */}
       <div className="relative aspect-square overflow-hidden">
         <img
           src={dog.images[0]}
-          alt={dog.name}
-          className="w-full h-full object-cover"
+          alt={`${dog.name}, ${dog.traits.age} year old ${dog.traits.breed}`}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        <div className="absolute top-4 right-4 flex gap-2">
-          <Badge variant="secondary" className="backdrop-blur-sm bg-background/80">
-            {dog.traits.breed}
+        {distance !== undefined && (
+          <Badge 
+            variant="secondary" 
+            className="absolute top-3 left-3 backdrop-blur-sm bg-background/90 shadow-md"
+          >
+            {formatDistance(distance)}
           </Badge>
-        </div>
+        )}
       </div>
 
       {/* Content */}
-      <div className="p-6 space-y-4">
-        {/* Name and Location */}
+      <div className="p-4 space-y-3">
+        {/* Name, Age, and Location */}
         <div>
-          <h2 className="text-3xl font-bold mb-2">
+          <h3 className="text-lg font-bold mb-1 line-clamp-1">
             {dog.name}, {dog.traits.age}
-          </h2>
-          <div className="flex items-center text-muted-foreground">
-            <MapPin className="w-4 h-4 mr-1" />
-            <span className="text-sm">
+          </h3>
+          <div className="flex items-center text-muted-foreground text-sm">
+            <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
+            <span className="line-clamp-1">
               {dog.location.city}, {dog.location.state}
             </span>
           </div>
         </div>
 
         {/* Bio */}
-        <p className="text-sm text-foreground/80 leading-relaxed">
+        <p className="text-sm text-foreground/70 line-clamp-2 leading-relaxed">
           {dog.bio}
         </p>
 
-        {/* Traits */}
-        <div className="space-y-2">
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="outline">{dog.traits.weight} lbs</Badge>
-            <Badge variant="outline">{dog.traits.sex}</Badge>
-            {dog.traits.neutered && <Badge variant="outline">Neutered</Badge>}
-            {dog.traits.vaccinated && <Badge variant="outline">Vaccinated</Badge>}
-          </div>
-
-          <div className="grid grid-cols-3 gap-2 pt-2">
-            <div className="text-center p-2 bg-muted/50 rounded-lg">
-              <div className="text-sm font-medium">Dog Friendly</div>
-              <div className="text-lg font-bold text-primary">
-                {dog.traits.dogSociability}/5
-              </div>
-            </div>
-            <div className="text-center p-2 bg-muted/50 rounded-lg">
-              <div className="text-sm font-medium">People Friendly</div>
-              <div className="text-lg font-bold text-secondary">
-                {dog.traits.humanSociability}/5
-              </div>
-            </div>
-            <div className="text-center p-2 bg-muted/50 rounded-lg">
-              <div className="text-sm font-medium">Temperament</div>
-              <div className="text-lg font-bold text-accent">
-                {dog.traits.temperament}/5
-              </div>
-            </div>
-          </div>
+        {/* Tags */}
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          <Badge variant="outline" className="text-xs">
+            {dog.traits.breed}
+          </Badge>
+          <Badge variant="outline" className="text-xs">
+            {dog.traits.weight} lbs
+          </Badge>
+          <Badge variant="outline" className="text-xs">
+            {dog.traits.sex}
+          </Badge>
         </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-4 pt-4">
-          <Button
-            variant="destructive"
-            size="lg"
-            className="flex-1"
-            onClick={onDecline}
-          >
-            <X className="w-5 h-5 mr-2" />
-            Pass
-          </Button>
-          <Button
-            variant="accept"
-            size="lg"
-            className="flex-1"
-            onClick={onAccept}
-          >
-            <Heart className="w-5 h-5 mr-2" />
-            Connect
-          </Button>
+        {/* Ratings Preview */}
+        <div className="flex gap-2 pt-2 text-xs">
+          <div className="flex items-center gap-1">
+            <span className="text-muted-foreground">🐕</span>
+            <span className="font-medium">{dog.traits.dogSociability}/5</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-muted-foreground">👤</span>
+            <span className="font-medium">{dog.traits.humanSociability}/5</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-muted-foreground">⭐</span>
+            <span className="font-medium">{dog.traits.temperament}/5</span>
+          </div>
         </div>
       </div>
     </Card>

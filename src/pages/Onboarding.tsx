@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
+import { Badge } from '@/components/ui/badge';
 import { Heart, ArrowLeft, ArrowRight } from 'lucide-react';
 
 const Onboarding = () => {
@@ -181,41 +182,56 @@ const Onboarding = () => {
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <Label>Sociability with Dogs: {dogData.dogSociability}/5</Label>
+                <div className="space-y-3 p-4 rounded-lg bg-muted/30 transition-all duration-200 hover:bg-muted/50">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Sociability with Dogs</Label>
+                    <Badge variant="secondary" className="font-bold">
+                      {dogData.dogSociability}/5
+                    </Badge>
+                  </div>
                   <Slider
                     value={[dogData.dogSociability]}
                     onValueChange={([value]) => setDogData({ ...dogData, dogSociability: value })}
                     min={1}
                     max={5}
                     step={1}
-                    className="w-full"
+                    className="w-full cursor-pointer"
                   />
                   <p className="text-xs text-muted-foreground">How well does your dog play with other dogs?</p>
                 </div>
 
-                <div className="space-y-3">
-                  <Label>Sociability with Humans: {dogData.humanSociability}/5</Label>
+                <div className="space-y-3 p-4 rounded-lg bg-muted/30 transition-all duration-200 hover:bg-muted/50">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Sociability with Humans</Label>
+                    <Badge variant="secondary" className="font-bold">
+                      {dogData.humanSociability}/5
+                    </Badge>
+                  </div>
                   <Slider
                     value={[dogData.humanSociability]}
                     onValueChange={([value]) => setDogData({ ...dogData, humanSociability: value })}
                     min={1}
                     max={5}
                     step={1}
-                    className="w-full"
+                    className="w-full cursor-pointer"
                   />
                   <p className="text-xs text-muted-foreground">How friendly is your dog with people?</p>
                 </div>
 
-                <div className="space-y-3">
-                  <Label>Overall Temperament: {dogData.temperament}/5</Label>
+                <div className="space-y-3 p-4 rounded-lg bg-muted/30 transition-all duration-200 hover:bg-muted/50">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Overall Temperament</Label>
+                    <Badge variant="secondary" className="font-bold">
+                      {dogData.temperament}/5
+                    </Badge>
+                  </div>
                   <Slider
                     value={[dogData.temperament]}
                     onValueChange={([value]) => setDogData({ ...dogData, temperament: value })}
                     min={1}
                     max={5}
                     step={1}
-                    className="w-full"
+                    className="w-full cursor-pointer"
                   />
                   <p className="text-xs text-muted-foreground">How calm and well-behaved is your dog?</p>
                 </div>
