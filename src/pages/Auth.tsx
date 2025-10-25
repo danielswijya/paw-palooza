@@ -1,17 +1,44 @@
+import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 import heroImage from '@/assets/hero-dogs.jpg';
 import pawfectLogo from '@/assets/pawfect-logo.png';
 
-const Login = () => {
+const Auth = () => {
   const navigate = useNavigate();
+  const { signInWithGoogle, user, loading } = useAuth();
+  const { toast } = useToast();
 
-  const handleGoogleLogin = () => {
-    // Placeholder for Google OAuth
-    // Will be connected to Supabase later
-    navigate('/onboarding');
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/owner-onboarding');
+    }
+  }, [user, loading, navigate]);
+
+  const handleGoogleLogin = async () => {
+    const { error } = await signInWithGoogle();
+    if (error) {
+      toast({
+        title: 'Authentication Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
@@ -43,7 +70,7 @@ const Login = () => {
         {/* Login Card */}
         <Card className="shadow-xl border-2">
           <CardHeader className="space-y-4">
-            <CardTitle className="text-3xl text-center">Welcome Back!</CardTitle>
+            <CardTitle className="text-3xl text-center">Welcome!</CardTitle>
             <CardDescription className="text-center text-base">
               Sign in to start connecting with dog lovers in your area
             </CardDescription>
@@ -76,21 +103,6 @@ const Login = () => {
               Continue with Google
             </Button>
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">Coming soon</span>
-              </div>
-            </div>
-
-            <div className="space-y-3 opacity-50">
-              <Button variant="outline" size="lg" className="w-full" disabled>
-                Continue with Email
-              </Button>
-            </div>
-
             <p className="text-center text-sm text-muted-foreground">
               By continuing, you agree to our Terms of Service and Privacy Policy
             </p>
@@ -101,4 +113,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Auth;

@@ -34,13 +34,17 @@ export type Database = {
           about: string | null
           age: number | null
           breed: string | null
+          city: string | null
           created_at: string | null
           id: string
+          lat: number | null
+          lng: number | null
           name: string | null
           neutered: number | null
           owner_id: string | null
           sex: number | null
           sociability: number | null
+          state: string | null
           temperament: number | null
           weight: number | null
         }
@@ -48,13 +52,17 @@ export type Database = {
           about?: string | null
           age?: number | null
           breed?: string | null
+          city?: string | null
           created_at?: string | null
           id?: string
+          lat?: number | null
+          lng?: number | null
           name?: string | null
           neutered?: number | null
           owner_id?: string | null
           sex?: number | null
           sociability?: number | null
+          state?: string | null
           temperament?: number | null
           weight?: number | null
         }
@@ -62,13 +70,17 @@ export type Database = {
           about?: string | null
           age?: number | null
           breed?: string | null
+          city?: string | null
           created_at?: string | null
           id?: string
+          lat?: number | null
+          lng?: number | null
           name?: string | null
           neutered?: number | null
           owner_id?: string | null
           sex?: number | null
           sociability?: number | null
+          state?: string | null
           temperament?: number | null
           weight?: number | null
         }
@@ -86,29 +98,44 @@ export type Database = {
         Row: {
           about: string | null
           age: number | null
+          city: string | null
           created_at: string | null
           email: string | null
           gender: string | null
           id: string
+          lat: number | null
+          lng: number | null
           name: string | null
+          state: string | null
+          user_id: string | null
         }
         Insert: {
           about?: string | null
           age?: number | null
+          city?: string | null
           created_at?: string | null
           email?: string | null
           gender?: string | null
           id?: string
+          lat?: number | null
+          lng?: number | null
           name?: string | null
+          state?: string | null
+          user_id?: string | null
         }
         Update: {
           about?: string | null
           age?: number | null
+          city?: string | null
           created_at?: string | null
           email?: string | null
           gender?: string | null
           id?: string
+          lat?: number | null
+          lng?: number | null
           name?: string | null
+          state?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

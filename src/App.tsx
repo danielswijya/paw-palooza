@@ -3,8 +3,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
-import Onboarding from "./pages/Onboarding";
+import Auth from "./pages/Auth";
+import OwnerOnboarding from "./pages/OwnerOnboarding";
+import DogOnboarding from "./pages/DogOnboarding";
+import Dashboard from "./pages/Dashboard";
 import Browse from "./pages/Browse";
 import DogProfile from "./pages/DogProfile";
 import Messages from "./pages/Messages";
@@ -20,8 +22,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Browse />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/owner-onboarding" element={<OwnerOnboarding />} />
+          <Route path="/dog-onboarding" element={<DogOnboarding />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dog/:id" element={<DogProfile />} />
           <Route path="/messages" element={<Messages />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
