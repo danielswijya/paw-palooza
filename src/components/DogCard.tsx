@@ -3,6 +3,7 @@ import { MapPin } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatDistance } from '@/lib/distance';
+import { SpotlightCard } from '@/components/SpotlightCard';
 
 interface DogCardProps {
   dog: DogProfile;
@@ -12,10 +13,14 @@ interface DogCardProps {
 
 const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
   return (
-    <Card 
-      className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
-      onClick={onClick}
+    <SpotlightCard 
+      className="group"
+      spotlightColor="rgba(255, 127, 80, 0.08)"
     >
+      <Card 
+        className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer relative"
+        onClick={onClick}
+      >
       {/* Image */}
       <div className="relative w-full aspect-[4/3] overflow-hidden">
         <img
@@ -83,6 +88,7 @@ const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
         </div>
       </div>
     </Card>
+    </SpotlightCard>
   );
 };
 
