@@ -23,6 +23,14 @@ export interface DogProfile {
   bio: string;
   traits: DogTraits;
   ownerId: string;
+  owner?: {
+    id: string;
+    name: string;
+    email: string;
+    age?: number;
+    gender?: string;
+    about?: string;
+  };
 }
 
 export interface UserTraits {

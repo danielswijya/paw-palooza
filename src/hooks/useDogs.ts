@@ -56,6 +56,14 @@ export const useDogs = () => {
           temperament: dog.temperament || 3,
         },
         ownerId: dog.owner_id,
+        owner: dog.owners ? {
+          id: dog.owners.id,
+          name: dog.owners.name,
+          email: dog.owners.email,
+          age: dog.owners.age,
+          gender: dog.owners.gender,
+          about: dog.owners.about,
+        } : undefined,
       }));
 
       return dogs;
@@ -108,6 +116,14 @@ export const useDog = (id: string) => {
           temperament: data.temperament || 3,
         },
         ownerId: data.owner_id,
+        owner: data.owners ? {
+          id: data.owners.id,
+          name: data.owners.name,
+          email: data.owners.email,
+          age: data.owners.age,
+          gender: data.owners.gender,
+          about: data.owners.about,
+        } : undefined,
       };
 
       return dog;

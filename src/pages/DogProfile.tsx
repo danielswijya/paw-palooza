@@ -185,10 +185,12 @@ const DogProfile = () => {
             <div className="flex items-start gap-4">
               <Avatar className="w-12 h-12">
                 <AvatarImage src={dog.images[0]} alt="Owner" />
-                <AvatarFallback>{dog.name[0]}</AvatarFallback>
+                <AvatarFallback>{dog.owner?.name?.[0] || dog.name[0]}</AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="text-lg font-semibold">Hosted by Sarah</h3>
+                <h3 className="text-lg font-semibold">
+                  Hosted by {dog.owner?.name || 'Owner'}
+                </h3>
                 <p className="text-muted-foreground text-sm">Hosting since 2023</p>
               </div>
             </div>
