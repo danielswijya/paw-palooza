@@ -17,16 +17,25 @@ import {
   MessageSquare,
   ChevronRight
 } from 'lucide-react';
-import { mockDogs } from '@/data/mockDogs';
 import { formatDistance } from '@/lib/distance';
 import { toast } from 'sonner';
 import pawfectLogo from '@/assets/pawfect-logo.png';
+import { useDog } from '@/hooks/useDogs';
 
 const DogProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { data: dog, isLoading } = useDog(id || '');
   
-  const dog = mockDogs.find(d => d.id === id);
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
   
   if (!dog) {
     return (

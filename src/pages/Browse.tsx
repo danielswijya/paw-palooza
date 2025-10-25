@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { mockDogs, userLocation } from '@/data/mockDogs';
+import { userLocation } from '@/data/mockDogs';
 import DogCard from '@/components/DogCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,13 +15,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import pawfectLogo from '@/assets/pawfect-logo.png';
+import { useDogs } from '@/hooks/useDogs';
 
 const Browse = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const { data: dogs = [], isLoading } = useDogs();
 
   // Calculate distances and sort by proximity
-  const dogsWithDistance = mockDogs.map(dog => ({
+  const dogsWithDistance = dogs.map(dog => ({
     ...dog,
     distance: calculateDistance(
       userLocation.lat,
@@ -164,7 +166,11 @@ const Browse = () => {
             </div>
           </div>
 
-          {allDogs.length > 0 ? (
+          {isLoading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Loading dogs...</p>
+            </div>
+          ) : allDogs.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {allDogs.map((dog, index) => (
                 <div
