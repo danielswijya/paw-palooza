@@ -14,7 +14,146 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      breed: {
+        Row: {
+          id: string
+          name: string | null
+        }
+        Insert: {
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
+      dogs: {
+        Row: {
+          about: string | null
+          age: number | null
+          breed: string | null
+          created_at: string | null
+          id: string
+          name: string | null
+          neutered: number | null
+          owner_id: string | null
+          sex: number | null
+          sociability: number | null
+          temperament: number | null
+          weight: number | null
+        }
+        Insert: {
+          about?: string | null
+          age?: number | null
+          breed?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          neutered?: number | null
+          owner_id?: string | null
+          sex?: number | null
+          sociability?: number | null
+          temperament?: number | null
+          weight?: number | null
+        }
+        Update: {
+          about?: string | null
+          age?: number | null
+          breed?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string | null
+          neutered?: number | null
+          owner_id?: string | null
+          sex?: number | null
+          sociability?: number | null
+          temperament?: number | null
+          weight?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dogs_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "owners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      owners: {
+        Row: {
+          about: string | null
+          age: number | null
+          created_at: string | null
+          email: string | null
+          gender: string | null
+          id: string
+          name: string | null
+        }
+        Insert: {
+          about?: string | null
+          age?: number | null
+          created_at?: string | null
+          email?: string | null
+          gender?: string | null
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          about?: string | null
+          age?: number | null
+          created_at?: string | null
+          email?: string | null
+          gender?: string | null
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          dog_id: string | null
+          id: string
+          owner_id: string | null
+          rating: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          dog_id?: string | null
+          id?: string
+          owner_id?: string | null
+          rating?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          dog_id?: string | null
+          id?: string
+          owner_id?: string | null
+          rating?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_dog_id_fkey"
+            columns: ["dog_id"]
+            isOneToOne: false
+            referencedRelation: "dogs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "owners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
