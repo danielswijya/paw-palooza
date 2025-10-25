@@ -41,7 +41,7 @@ const DogProfileModal = ({ dog, distance, open, onClose }: DogProfileModalProps)
           {distance !== undefined && (
             <Badge 
               variant="secondary" 
-              className="absolute top-4 left-4 backdrop-blur-sm bg-background/90 shadow-lg"
+              className="absolute top-4 left-4 backdrop-blur-sm bg-card shadow-lg border"
             >
               {formatDistance(distance)}
             </Badge>
