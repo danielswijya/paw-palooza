@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { mockDogs, userLocation } from '@/data/mockDogs';
 import DogCard from '@/components/DogCard';
-import DogProfileModal from '@/components/DogProfileModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Heart, User, Settings, Search, LogIn, ClipboardList } from 'lucide-react';
+import { Heart, User, Settings, Search, LogIn, ClipboardList, MessageSquare } from 'lucide-react';
 import { calculateDistance } from '@/lib/distance';
 import { DogProfile } from '@/types/dog';
 import {
@@ -19,8 +18,6 @@ import {
 const Browse = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDog, setSelectedDog] = useState<DogProfile | null>(null);
-  const [selectedDistance, setSelectedDistance] = useState<number | undefined>();
 
   // Calculate distances and sort by proximity
   const dogsWithDistance = mockDogs.map(dog => ({
@@ -46,9 +43,8 @@ const Browse = () => {
       )
     : dogsWithDistance;
 
-  const handleCardClick = (dog: DogProfile, distance?: number) => {
-    setSelectedDog(dog);
-    setSelectedDistance(distance);
+  const handleCardClick = (dog: DogProfile) => {
+    navigate(`/dog/${dog.id}`);
   };
 
   return (
@@ -86,6 +82,11 @@ const Browse = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={() => navigate('/messages')}>
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Messages
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => navigate('/login')}>
                     <LogIn className="w-4 h-4 mr-2" />
                     Login / Sign Up
@@ -152,7 +153,7 @@ const Browse = () => {
                   <DogCard 
                     dog={dog} 
                     distance={dog.distance}
-                    onClick={() => handleCardClick(dog, dog.distance)}
+                    onClick={() => handleCardClick(dog)}
                   />
                 </div>
               ))}
@@ -184,7 +185,7 @@ const Browse = () => {
                   <DogCard 
                     dog={dog} 
                     distance={dog.distance}
-                    onClick={() => handleCardClick(dog, dog.distance)}
+                    onClick={() => handleCardClick(dog)}
                   />
                 </div>
               ))}
@@ -196,17 +197,6 @@ const Browse = () => {
           )}
         </section>
       </main>
-
-      {/* Profile Modal */}
-      <DogProfileModal
-        dog={selectedDog}
-        distance={selectedDistance}
-        open={!!selectedDog}
-        onClose={() => {
-          setSelectedDog(null);
-          setSelectedDistance(undefined);
-        }}
-      />
     </div>
   );
 };

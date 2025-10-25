@@ -182,57 +182,75 @@ const Onboarding = () => {
                   </div>
                 </div>
 
-                <div className="space-y-3 p-4 rounded-lg bg-muted/30 transition-all duration-200 hover:bg-muted/50">
-                  <div className="flex items-center justify-between">
+                <div className="space-y-3 p-5 rounded-lg bg-muted/30 transition-all duration-200 hover:bg-muted/50 select-none">
+                  <div className="flex items-center justify-between mb-2">
                     <Label className="text-sm font-medium">Sociability with Dogs</Label>
-                    <Badge variant="secondary" className="font-bold">
+                    <Badge variant="secondary" className="font-bold text-lg px-3 py-1">
                       {dogData.dogSociability}/5
                     </Badge>
                   </div>
-                  <Slider
-                    value={[dogData.dogSociability]}
-                    onValueChange={([value]) => setDogData({ ...dogData, dogSociability: value })}
-                    min={1}
-                    max={5}
-                    step={1}
-                    className="w-full cursor-pointer"
-                  />
+                  <div className="py-2">
+                    <Slider
+                      value={[dogData.dogSociability]}
+                      onValueChange={([value]) => setDogData({ ...dogData, dogSociability: value })}
+                      min={1}
+                      max={5}
+                      step={1}
+                      className="w-full cursor-grab active:cursor-grabbing touch-none"
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground pt-1">
+                    <span>Not social</span>
+                    <span>Very social</span>
+                  </div>
                   <p className="text-xs text-muted-foreground">How well does your dog play with other dogs?</p>
                 </div>
 
-                <div className="space-y-3 p-4 rounded-lg bg-muted/30 transition-all duration-200 hover:bg-muted/50">
-                  <div className="flex items-center justify-between">
+                <div className="space-y-3 p-5 rounded-lg bg-muted/30 transition-all duration-200 hover:bg-muted/50 select-none">
+                  <div className="flex items-center justify-between mb-2">
                     <Label className="text-sm font-medium">Sociability with Humans</Label>
-                    <Badge variant="secondary" className="font-bold">
+                    <Badge variant="secondary" className="font-bold text-lg px-3 py-1">
                       {dogData.humanSociability}/5
                     </Badge>
                   </div>
-                  <Slider
-                    value={[dogData.humanSociability]}
-                    onValueChange={([value]) => setDogData({ ...dogData, humanSociability: value })}
-                    min={1}
-                    max={5}
-                    step={1}
-                    className="w-full cursor-pointer"
-                  />
+                  <div className="py-2">
+                    <Slider
+                      value={[dogData.humanSociability]}
+                      onValueChange={([value]) => setDogData({ ...dogData, humanSociability: value })}
+                      min={1}
+                      max={5}
+                      step={1}
+                      className="w-full cursor-grab active:cursor-grabbing touch-none"
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground pt-1">
+                    <span>Shy</span>
+                    <span>Very friendly</span>
+                  </div>
                   <p className="text-xs text-muted-foreground">How friendly is your dog with people?</p>
                 </div>
 
-                <div className="space-y-3 p-4 rounded-lg bg-muted/30 transition-all duration-200 hover:bg-muted/50">
-                  <div className="flex items-center justify-between">
+                <div className="space-y-3 p-5 rounded-lg bg-muted/30 transition-all duration-200 hover:bg-muted/50 select-none">
+                  <div className="flex items-center justify-between mb-2">
                     <Label className="text-sm font-medium">Overall Temperament</Label>
-                    <Badge variant="secondary" className="font-bold">
+                    <Badge variant="secondary" className="font-bold text-lg px-3 py-1">
                       {dogData.temperament}/5
                     </Badge>
                   </div>
-                  <Slider
-                    value={[dogData.temperament]}
-                    onValueChange={([value]) => setDogData({ ...dogData, temperament: value })}
-                    min={1}
-                    max={5}
-                    step={1}
-                    className="w-full cursor-pointer"
-                  />
+                  <div className="py-2">
+                    <Slider
+                      value={[dogData.temperament]}
+                      onValueChange={([value]) => setDogData({ ...dogData, temperament: value })}
+                      min={1}
+                      max={5}
+                      step={1}
+                      className="w-full cursor-grab active:cursor-grabbing touch-none"
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground pt-1">
+                    <span>Energetic</span>
+                    <span>Very calm</span>
+                  </div>
                   <p className="text-xs text-muted-foreground">How calm and well-behaved is your dog?</p>
                 </div>
               </div>
