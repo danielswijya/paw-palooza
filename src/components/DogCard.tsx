@@ -17,7 +17,7 @@ const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
       onClick={onClick}
     >
       {/* Image */}
-      <div className="relative aspect-square overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden max-h-48">
         <img
           src={dog.images[0]}
           alt={`${dog.name}, ${dog.traits.age} year old ${dog.traits.breed}`}
@@ -34,14 +34,14 @@ const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-3">
+      <div className="p-3 space-y-2">
         {/* Name, Age, and Location */}
         <div>
-          <h3 className="text-lg font-bold mb-1 line-clamp-1">
+          <h3 className="text-base font-bold mb-0.5 line-clamp-1">
             {dog.name}, {dog.traits.age}
           </h3>
-          <div className="flex items-center text-muted-foreground text-sm">
-            <MapPin className="w-3.5 h-3.5 mr-1 flex-shrink-0" />
+          <div className="flex items-center text-muted-foreground text-xs">
+            <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
             <span className="line-clamp-1">
               {dog.location.city}, {dog.location.state}
             </span>
@@ -49,7 +49,7 @@ const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
         </div>
 
         {/* Bio */}
-        <p className="text-sm text-foreground/70 line-clamp-2 leading-relaxed">
+        <p className="text-xs text-foreground/70 line-clamp-2 leading-relaxed">
           {dog.bio}
         </p>
 
@@ -67,17 +67,17 @@ const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
         </div>
 
         {/* Ratings Preview */}
-        <div className="flex gap-2 pt-2 text-xs">
-          <div className="flex items-center gap-1">
-            <span className="text-muted-foreground">🐕</span>
+        <div className="flex gap-2 pt-1 text-xs">
+          <div className="flex items-center gap-0.5">
+            <span className="text-muted-foreground text-xs">🐕</span>
             <span className="font-medium">{dog.traits.dogSociability}/5</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="text-muted-foreground">👤</span>
+          <div className="flex items-center gap-0.5">
+            <span className="text-muted-foreground text-xs">👤</span>
             <span className="font-medium">{dog.traits.humanSociability}/5</span>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="text-muted-foreground">⭐</span>
+          <div className="flex items-center gap-0.5">
+            <span className="text-muted-foreground text-xs">⭐</span>
             <span className="font-medium">{dog.traits.temperament}/5</span>
           </div>
         </div>
