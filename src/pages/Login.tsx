@@ -24,7 +24,7 @@ const Login = () => {
           
           <div className="space-y-4">
             <h2 className="text-4xl md:text-5xl font-bold leading-tight">
-              Find the perfect playmate for your pup
+              Find the pawfect match for your pup!
             </h2>
             <p className="text-xl text-muted-foreground">
               Connect with local dogs and plan fun playdates. Because every dog deserves a best friend!
