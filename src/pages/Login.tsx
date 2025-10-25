@@ -21,7 +21,7 @@ const Login = () => {
           <div className="flex items-center justify-center md:justify-start gap-2 mb-8">
             <Heart className="h-10 w-10 text-primary fill-primary" />
             <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-[hsl(340_82%_62%)] bg-clip-text text-transparent">
-              Dog Dates
+              Pawfect
             </h1>
           </div>
           

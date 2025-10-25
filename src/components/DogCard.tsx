@@ -7,11 +7,15 @@ import { formatDistance } from '@/lib/distance';
 interface DogCardProps {
   dog: DogProfile;
   distance?: number;
+  onClick?: () => void;
 }
 
-const DogCard = ({ dog, distance }: DogCardProps) => {
+const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
   return (
-    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group">
+    <Card 
+      className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
+      onClick={onClick}
+    >
       {/* Image */}
       <div className="relative aspect-square overflow-hidden">
         <img

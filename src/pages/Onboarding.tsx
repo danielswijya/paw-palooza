@@ -63,7 +63,7 @@ const Onboarding = () => {
           <div className="flex items-center gap-2">
             <Heart className="h-8 w-8 text-primary fill-primary" />
             <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-[hsl(340_82%_62%)] bg-clip-text text-transparent">
-              Dog Dates
+              Pawfect
             </h1>
           </div>
           <div className="text-sm text-muted-foreground">
