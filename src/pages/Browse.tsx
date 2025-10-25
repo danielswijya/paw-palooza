@@ -54,10 +54,10 @@ const Browse = () => {
     <div className="min-h-screen bg-muted/30">
       {/* Header */}
       <header className="border-b bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <img src={pawfectLogo} alt="Pawfect" className="h-40 w-auto" />
+              <img src={pawfectLogo} alt="Pawfect" className="h-8 w-auto" />
             </div>
 
             {/* Search Bar */}
