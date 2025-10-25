@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Heart, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import pawfectLogo from '@/assets/pawfect-logo.png';
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -60,11 +61,8 @@ const Onboarding = () => {
       <div className="max-w-3xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-2">
-            <Heart className="h-8 w-8 text-primary fill-primary" />
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-[hsl(340_82%_62%)] bg-clip-text text-transparent">
-              Pawfect
-            </h1>
+          <div className="flex items-center gap-3">
+            <img src={pawfectLogo} alt="Pawfect" className="h-10 w-auto" />
           </div>
           <div className="text-sm text-muted-foreground">
             Step {step} of {totalSteps}

@@ -4,7 +4,7 @@ import { mockDogs, userLocation } from '@/data/mockDogs';
 import DogCard from '@/components/DogCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Heart, User, Settings, Search, LogIn, ClipboardList, MessageSquare } from 'lucide-react';
+import { User, Settings, Search, LogIn, ClipboardList, MessageSquare } from 'lucide-react';
 import { calculateDistance } from '@/lib/distance';
 import { DogProfile } from '@/types/dog';
 import {
@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import pawfectLogo from '@/assets/pawfect-logo.png';
 
 const Browse = () => {
   const navigate = useNavigate();
@@ -53,11 +54,8 @@ const Browse = () => {
       <header className="border-b bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <Heart className="h-7 w-7 text-primary fill-primary" />
-              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary to-[hsl(340_82%_62%)] bg-clip-text text-transparent">
-                Pawfect
-              </h1>
+            <div className="flex items-center gap-3">
+              <img src={pawfectLogo} alt="Pawfect" className="h-8 w-auto" />
             </div>
 
             {/* Search Bar */}

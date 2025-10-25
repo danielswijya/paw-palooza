@@ -5,8 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Heart, ArrowLeft, Send, User } from 'lucide-react';
+import { ArrowLeft, Send, User } from 'lucide-react';
 import { mockDogs } from '@/data/mockDogs';
+import pawfectLogo from '@/assets/pawfect-logo.png';
 
 interface Message {
   id: string;
@@ -115,12 +116,7 @@ const Messages = () => {
             <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div className="flex items-center gap-2">
-              <Heart className="h-6 w-6 text-primary fill-primary" />
-              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-[hsl(340_82%_62%)] bg-clip-text text-transparent">
-                Pawfect Messages
-              </h1>
-            </div>
+            <img src={pawfectLogo} alt="Pawfect Messages" className="h-8 w-auto" />
           </div>
         </div>
       </header>

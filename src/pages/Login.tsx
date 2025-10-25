@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
-import { Heart } from 'lucide-react';
 import heroImage from '@/assets/hero-dogs.jpg';
+import pawfectLogo from '@/assets/pawfect-logo.png';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,11 +18,8 @@ const Login = () => {
       <div className="w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center">
         {/* Hero Section */}
         <div className="space-y-6 text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-2 mb-8">
-            <Heart className="h-10 w-10 text-primary fill-primary" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-[hsl(340_82%_62%)] bg-clip-text text-transparent">
-              Pawfect
-            </h1>
+          <div className="flex items-center justify-center md:justify-start gap-3 mb-8">
+            <img src={pawfectLogo} alt="Pawfect" className="h-12 w-auto" />
           </div>
           
           <div className="space-y-4">
