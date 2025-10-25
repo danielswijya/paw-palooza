@@ -3,10 +3,24 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { MapPin, Heart, MessageSquare, Share2, ArrowLeft } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { 
+  MapPin, 
+  Heart, 
+  Share2, 
+  ArrowLeft, 
+  Star,
+  Shield,
+  Award,
+  Calendar,
+  CheckCircle2,
+  MessageSquare,
+  ChevronRight
+} from 'lucide-react';
 import { mockDogs } from '@/data/mockDogs';
 import { formatDistance } from '@/lib/distance';
 import { toast } from 'sonner';
+import pawfectLogo from '@/assets/pawfect-logo.png';
 
 const DogProfile = () => {
   const { id } = useParams();
@@ -38,205 +52,384 @@ const DogProfile = () => {
     navigate('/messages', { state: { dogId: dog.id, dogName: dog.name } });
   };
 
+  const handleShare = () => {
+    toast.success('Link copied to clipboard!');
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Navigation Header */}
+      {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <div className="container mx-auto px-4 py-4">
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-20 py-4">
           <div className="flex items-center justify-between">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => navigate('/')}
+              className="rounded-full"
+            >
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex gap-2">
-              <Button variant="ghost" size="icon">
-                <Share2 className="h-5 w-5" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleShare}
+                className="rounded-full"
+              >
+                <Share2 className="h-4 w-4 mr-2" />
+                <span className="underline">Share</span>
               </Button>
-              <Button variant="ghost" size="icon">
-                <Heart className="h-5 w-5" />
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="rounded-full"
+              >
+                <Heart className="h-4 w-4 mr-2" />
+                <span className="underline">Save</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Hero Image Gallery */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 rounded-xl overflow-hidden max-h-[500px]">
-          <div className="relative aspect-square md:aspect-auto">
-            <img
-              src={dog.images[0]}
-              alt={`${dog.name}, ${dog.traits.age} year old ${dog.traits.breed}`}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="hidden md:grid grid-cols-2 gap-2">
-            {dog.images.slice(1, 5).map((image, idx) => (
-              <div key={idx} className="relative aspect-square">
+      {/* Main Content */}
+      <div className="max-w-[1600px] mx-auto px-6 lg:px-20 py-6">
+        {/* Title Section - Above Images */}
+        <div className="mb-6">
+          <h1 className="text-2xl md:text-3xl font-semibold mb-2">
+            Meet {dog.name}
+          </h1>
+        </div>
+
+        {/* Image Gallery */}
+        <div className="mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-2 rounded-xl overflow-hidden h-[400px] md:h-[450px]">
+            {/* Large main image */}
+            <div className="md:col-span-2 md:row-span-2 relative group cursor-pointer">
+              <img
+                src={dog.images[0]}
+                alt={`${dog.name}`}
+                className="w-full h-full object-cover hover:brightness-90 transition-all"
+              />
+            </div>
+            {/* Grid of smaller images */}
+            {[...Array(4)].map((_, idx) => (
+              <div key={idx} className="hidden md:block relative group cursor-pointer">
                 <img
-                  src={image}
+                  src={dog.images[idx % dog.images.length]}
                   alt={`${dog.name} photo ${idx + 2}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover hover:brightness-90 transition-all"
                 />
+                {idx === 3 && (
+                  <button className="absolute bottom-4 right-4 bg-background border border-foreground px-4 py-2 rounded-lg text-sm font-semibold hover:bg-muted transition-colors">
+                    Show all photos
+                  </button>
+                )}
               </div>
             ))}
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="container mx-auto px-4 pb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Title and Location */}
-            <div className="space-y-3">
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16">
+          {/* Main Content - Left Side */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Header Info */}
+            <div className="space-y-4">
               <div className="flex items-start justify-between">
                 <div>
-                  <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                    {dog.name}, {dog.traits.age}
-                  </h1>
-                  <div className="flex items-center text-muted-foreground">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <span>{dog.location.city}, {dog.location.state}</span>
-                    {distance !== undefined && (
-                      <span className="ml-2">· {formatDistance(distance)}</span>
-                    )}
+                  <h2 className="text-xl md:text-2xl font-semibold mb-1">
+                    {dog.traits.breed} in {dog.location.city}, {dog.location.state}
+                  </h2>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <span>{dog.traits.age} years old</span>
+                    <span>·</span>
+                    <span>{dog.traits.weight} lbs</span>
+                    <span>·</span>
+                    <span>{dog.traits.sex}</span>
                   </div>
                 </div>
+                <Avatar className="w-14 h-14">
+                  <AvatarImage src={dog.images[0]} alt="Owner" />
+                  <AvatarFallback>
+                    {dog.name[0]}
+                  </AvatarFallback>
+                </Avatar>
               </div>
               
-              <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="text-sm">{dog.traits.breed}</Badge>
-                <Badge variant="outline" className="text-sm">{dog.traits.weight} lbs</Badge>
-                <Badge variant="outline" className="text-sm">{dog.traits.sex}</Badge>
-                {dog.traits.neutered && <Badge variant="outline" className="text-sm">Neutered</Badge>}
-                {dog.traits.vaccinated && <Badge variant="outline" className="text-sm">Vaccinated</Badge>}
+              <div className="flex items-center gap-2">
+                <Star className="w-4 h-4 fill-current" />
+                <span className="font-semibold">4.95</span>
+                <span className="text-muted-foreground">·</span>
+                <button className="underline font-semibold">
+                  25 reviews
+                </button>
+                <span className="text-muted-foreground">·</span>
+                <span className="text-muted-foreground">{formatDistance(distance)}</span>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Hosted by Section */}
+            <div className="flex items-start gap-4">
+              <Avatar className="w-12 h-12">
+                <AvatarImage src={dog.images[0]} alt="Owner" />
+                <AvatarFallback>{dog.name[0]}</AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="text-lg font-semibold">Hosted by Sarah</h3>
+                <p className="text-muted-foreground text-sm">Hosting since 2023</p>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Key Features */}
+            <div className="space-y-6">
+              <div className="flex gap-4">
+                <Shield className="w-6 h-6 flex-shrink-0" />
+                <div>
+                  <h4 className="font-semibold mb-1">Fully vaccinated</h4>
+                  <p className="text-muted-foreground text-sm">
+                    {dog.name} is up to date on all vaccinations and health checks
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Award className="w-6 h-6 flex-shrink-0" />
+                <div>
+                  <h4 className="font-semibold mb-1">Great with other dogs</h4>
+                  <p className="text-muted-foreground text-sm">
+                    Rated {dog.traits.dogSociability}/5 for dog sociability
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <Calendar className="w-6 h-6 flex-shrink-0" />
+                <div>
+                  <h4 className="font-semibold mb-1">Available for playdates</h4>
+                  <p className="text-muted-foreground text-sm">
+                    Flexible schedule for meetups and playdates
+                  </p>
+                </div>
               </div>
             </div>
 
             <Separator />
 
             {/* About Section */}
-            <div className="space-y-3">
-              <h2 className="text-2xl font-semibold">About {dog.name}</h2>
-              <p className="text-foreground/80 leading-relaxed text-lg">{dog.bio}</p>
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold">About {dog.name}</h3>
+              <p className="text-foreground leading-relaxed whitespace-pre-line">
+                {dog.bio}
+              </p>
+              <button className="font-semibold underline flex items-center gap-1 hover:gap-2 transition-all">
+                Show more
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
 
             <Separator />
 
-            {/* Personality Traits */}
-            <div className="space-y-4">
-              <h2 className="text-2xl font-semibold">Personality</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-                  <div className="text-4xl mb-3">🐕</div>
-                  <div className="text-sm font-medium text-muted-foreground mb-2">
-                    Dog Friendly
-                  </div>
-                  <div className="text-3xl font-bold text-primary">
-                    {dog.traits.dogSociability}/5
-                  </div>
-                </Card>
-                <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-                  <div className="text-4xl mb-3">👤</div>
-                  <div className="text-sm font-medium text-muted-foreground mb-2">
-                    People Friendly
-                  </div>
-                  <div className="text-3xl font-bold text-secondary">
-                    {dog.traits.humanSociability}/5
-                  </div>
-                </Card>
-                <Card className="p-6 text-center hover:shadow-lg transition-shadow">
-                  <div className="text-4xl mb-3">⭐</div>
-                  <div className="text-sm font-medium text-muted-foreground mb-2">
-                    Temperament
-                  </div>
-                  <div className="text-3xl font-bold text-accent">
-                    {dog.traits.temperament}/5
-                  </div>
-                </Card>
+            {/* What this place offers */}
+            <div className="space-y-6">
+              <h3 className="text-xl font-semibold">What {dog.name} offers</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>Friendly with dogs</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>Good with people</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>Vaccinated</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>Neutered/Spayed</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>House trained</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>Leash trained</span>
+                </div>
               </div>
+
+              <button className="border border-foreground px-6 py-3 rounded-lg font-semibold hover:bg-muted transition-colors">
+                Show all amenities
+              </button>
             </div>
 
             <Separator />
 
-            {/* What This Dog Offers */}
+            {/* Reviews Section */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <Star className="w-6 h-6 fill-current" />
+                <h3 className="text-xl font-semibold">4.95 · 25 reviews</h3>
+              </div>
+
+              {/* Review Categories */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between">
+                  <span>Friendliness</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-32 h-1 bg-foreground rounded-full"></div>
+                    <span className="font-semibold text-sm">4.9</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Energy level</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-32 h-1 bg-foreground rounded-full"></div>
+                    <span className="font-semibold text-sm">4.8</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Obedience</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-32 h-1 bg-foreground rounded-full"></div>
+                    <span className="font-semibold text-sm">5.0</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Playfulness</span>
+                  <div className="flex items-center gap-2">
+                    <div className="w-32 h-1 bg-foreground rounded-full"></div>
+                    <span className="font-semibold text-sm">4.9</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Individual Reviews */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {[1, 2, 3, 4].map((review) => (
+                  <div key={review} className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <Avatar className="w-10 h-10">
+                        <AvatarFallback>JD</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="font-semibold">John Doe</p>
+                        <p className="text-sm text-muted-foreground">October 2024</p>
+                      </div>
+                    </div>
+                    <p className="text-sm">
+                      Amazing playdate! {dog.name} was so friendly and energetic. Our dogs had a blast together at the park.
+                    </p>
+                  </div>
+                ))}
+              </div>
+
+              <button className="border border-foreground px-6 py-3 rounded-lg font-semibold hover:bg-muted transition-colors">
+                Show all 25 reviews
+              </button>
+            </div>
+
+            <Separator />
+
+            {/* Location */}
             <div className="space-y-4">
-              <h2 className="text-2xl font-semibold">What {dog.name} enjoys</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                  <span className="text-2xl">🎾</span>
-                  <div>
-                    <div className="font-medium">Playtime</div>
-                    <div className="text-sm text-muted-foreground">Loves to play fetch and run</div>
-                  </div>
+              <h3 className="text-xl font-semibold">Where you'll meet</h3>
+              <div className="flex items-start gap-2">
+                <MapPin className="w-5 h-5 mt-1 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold">{dog.location.city}, {dog.location.state}</p>
+                  <p className="text-muted-foreground text-sm">{formatDistance(distance)} away</p>
                 </div>
-                <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                  <span className="text-2xl">🌳</span>
-                  <div>
-                    <div className="font-medium">Park visits</div>
-                    <div className="text-sm text-muted-foreground">Enjoys outdoor adventures</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                  <span className="text-2xl">🦴</span>
-                  <div>
-                    <div className="font-medium">Treats</div>
-                    <div className="text-sm text-muted-foreground">Food motivated</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors">
-                  <span className="text-2xl">🏊</span>
-                  <div>
-                    <div className="font-medium">Swimming</div>
-                    <div className="text-sm text-muted-foreground">Water enthusiast</div>
-                  </div>
-                </div>
+              </div>
+              <div className="bg-muted rounded-xl h-[400px] flex items-center justify-center">
+                <p className="text-muted-foreground">Map view</p>
               </div>
             </div>
           </div>
 
-          {/* Sidebar - Contact Card */}
+          {/* Sidebar - Booking Card */}
           <div className="lg:col-span-1">
-            <Card className="sticky top-24 p-6 shadow-xl space-y-4">
-              <div className="text-center space-y-2">
-                <div className="text-3xl font-bold text-primary">
-                  {formatDistance(distance)}
+            <Card className="sticky top-24 p-6 shadow-xl border-2">
+              <div className="space-y-6">
+                <div>
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="text-xl font-semibold">Free</span>
+                    <span className="text-muted-foreground">playdate</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Star className="w-4 h-4 fill-current" />
+                    <span className="font-semibold">4.95</span>
+                    <span className="text-muted-foreground">·</span>
+                    <button className="underline text-muted-foreground">
+                      25 reviews
+                    </button>
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground">from your location</p>
-              </div>
 
-              <Separator />
+                <Separator />
 
-              <div className="space-y-3">
-                <Button 
-                  variant="accept" 
-                  size="lg" 
-                  className="w-full"
-                  onClick={handleConnect}
-                >
-                  <Heart className="w-5 h-5 mr-2" />
-                  Send Playdate Request
-                </Button>
-                
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="w-full"
-                  onClick={handleMessage}
-                >
-                  <MessageSquare className="w-5 h-5 mr-2" />
-                  Message
-                </Button>
-              </div>
+                <div className="space-y-3">
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(340_82%_52%)] hover:opacity-90 text-white font-semibold"
+                    onClick={handleConnect}
+                  >
+                    Request playdate
+                  </Button>
+                  
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="w-full font-semibold"
+                    onClick={handleMessage}
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Message
+                  </Button>
+                </div>
 
-              <div className="pt-4 text-center text-sm text-muted-foreground">
-                <p>You won't be charged yet</p>
+                <p className="text-center text-sm text-muted-foreground">
+                  You won't be charged yet
+                </p>
+
+                <Separator />
+
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <Shield className="w-4 h-4" />
+                  <span>Report this listing</span>
+                </div>
               </div>
             </Card>
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="border-t mt-16">
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-20 py-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <img src={pawfectLogo} alt="Pawfect" className="h-6 w-auto" />
+              <span className="text-sm text-muted-foreground">
+                © 2024 Pawfect, Inc.
+              </span>
+            </div>
+            <div className="flex gap-4 text-sm">
+              <button className="hover:underline">Terms</button>
+              <button className="hover:underline">Privacy</button>
+              <button className="hover:underline">Support</button>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
