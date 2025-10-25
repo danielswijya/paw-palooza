@@ -17,11 +17,11 @@ const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
       onClick={onClick}
     >
       {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden max-h-48">
+      <div className="relative w-full aspect-[4/3] overflow-hidden">
         <img
           src={dog.images[0]}
           alt={`${dog.name}, ${dog.traits.age} year old ${dog.traits.breed}`}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         {distance !== undefined && (
           <Badge 
