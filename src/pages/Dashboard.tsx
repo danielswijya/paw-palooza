@@ -76,19 +76,24 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
+      <header className="border-b bg-card sticky top-0 z-10">
+        <div className="container mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <img src={pawfectLogo} alt="Pawfect" className="h-8 w-auto" />
+              <nav className="hidden md:flex items-center gap-1">
+                <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
+                  Browse
+                </Button>
+                <Button variant="ghost" size="sm" className="bg-muted">
+                  Dashboard
+                </Button>
+              </nav>
             </div>
             
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" onClick={() => navigate('/browse')}>
-                Browse Dogs
-              </Button>
+            <div className="flex items-center gap-2">
               <Button variant="ghost" size="sm" onClick={handleSignOut}>
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
@@ -98,120 +103,129 @@ const Dashboard = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-6 py-8 max-w-7xl">
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Welcome back, {profile?.name}!</h1>
-          <p className="text-muted-foreground text-lg">
-            Manage your dogs and connect with the community
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold mb-1">Dashboard</h1>
+          <p className="text-muted-foreground">
+            Welcome back, {profile?.name}
           </p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Your Dogs
-              </CardTitle>
-              <Dog className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">{dogs.length}</div>
-            </CardContent>
-          </Card>
+        {/* Stats Bar */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="flex items-center gap-4 p-4 border rounded-lg bg-card">
+            <div className="p-3 rounded-lg bg-muted">
+              <Dog className="h-5 w-5 text-foreground" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Your Dogs</p>
+              <p className="text-2xl font-bold">{dogs.length}</p>
+            </div>
+          </div>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Location
-              </CardTitle>
-              <User className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
+          <div className="flex items-center gap-4 p-4 border rounded-lg bg-card">
+            <div className="p-3 rounded-lg bg-muted">
+              <User className="h-5 w-5 text-foreground" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Location</p>
+              <p className="text-lg font-semibold">
                 {profile?.city}, {profile?.state}
-              </div>
-            </CardContent>
-          </Card>
+              </p>
+            </div>
+          </div>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Profile
-              </CardTitle>
-              <Settings className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" size="sm" className="mt-1">
+          <div className="flex items-center gap-4 p-4 border rounded-lg bg-card">
+            <div className="p-3 rounded-lg bg-muted">
+              <Settings className="h-5 w-5 text-foreground" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm text-muted-foreground mb-2">Profile Settings</p>
+              <Button variant="outline" size="sm">
                 Edit Profile
               </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Dogs Section */}
-        <Card>
-          <CardHeader>
+        <div className="border rounded-lg bg-card">
+          <div className="p-6 border-b">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-2xl">Your Dogs</CardTitle>
-                <CardDescription className="mt-2">
-                  Manage your dog profiles and add new ones
-                </CardDescription>
+                <h2 className="text-xl font-semibold">Your Dogs</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Manage your dog profiles
+                </p>
               </div>
-              <Button variant="hero" onClick={() => navigate('/dog-onboarding')}>
+              <Button onClick={() => navigate('/dog-onboarding')}>
                 <PlusCircle className="w-4 h-4 mr-2" />
                 Add Dog
               </Button>
             </div>
-          </CardHeader>
-          <CardContent>
+          </div>
+          
+          <div className="p-6">
             {loadingDogs ? (
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-3"></div>
                 <p className="text-sm text-muted-foreground">Loading dogs...</p>
               </div>
             ) : dogs.length === 0 ? (
-              <div className="text-center py-12 border-2 border-dashed rounded-lg">
-                <Dog className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No dogs yet</h3>
-                <p className="text-muted-foreground mb-6">
-                  Add your first dog to start connecting with others
+              <div className="text-center py-16">
+                <div className="mx-auto w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                  <Dog className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No dogs yet</h3>
+                <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+                  Add your first dog to start connecting with the community
                 </p>
-                <Button variant="hero" onClick={() => navigate('/dog-onboarding')}>
+                <Button onClick={() => navigate('/dog-onboarding')}>
                   <PlusCircle className="w-4 h-4 mr-2" />
                   Add Your First Dog
                 </Button>
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {dogs.map((dog) => (
-                  <Card key={dog.id} className="hover:shadow-lg transition-all cursor-pointer">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Dog className="w-5 h-5 text-primary" />
-                        {dog.name}
-                      </CardTitle>
-                      <CardDescription>{dog.breed}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2 text-sm">
-                        <p><span className="font-medium">Age:</span> {dog.age} years</p>
-                        {dog.about && (
-                          <p className="text-muted-foreground line-clamp-2">{dog.about}</p>
-                        )}
+                  <div 
+                    key={dog.id} 
+                    className="border rounded-lg p-4 hover:border-primary/50 hover:shadow-sm transition-all cursor-pointer bg-card"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Dog className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">{dog.name}</h3>
+                          <p className="text-sm text-muted-foreground">{dog.breed}</p>
+                        </div>
                       </div>
-                      <Button variant="outline" size="sm" className="w-full mt-4">
-                        View Profile
-                      </Button>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    
+                    <div className="space-y-1 text-sm mb-4">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Age</span>
+                        <span className="font-medium">{dog.age} years</span>
+                      </div>
+                      {dog.about && (
+                        <p className="text-muted-foreground text-xs line-clamp-2 mt-2">
+                          {dog.about}
+                        </p>
+                      )}
+                    </div>
+                    
+                    <Button variant="outline" size="sm" className="w-full">
+                      View Profile
+                    </Button>
+                  </div>
                 ))}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
