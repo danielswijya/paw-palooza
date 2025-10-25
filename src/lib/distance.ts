@@ -27,8 +27,9 @@ function toRad(degrees: number): number {
 }
 
 export function formatDistance(miles: number): string {
-  if (miles < 1) {
+  const rounded = Math.round(miles * 100) / 100; // Round to 2 decimal places
+  if (rounded < 1) {
     return '< 1 mi away';
   }
-  return `${miles} mi away`;
+  return `${rounded} mi away`;
 }
