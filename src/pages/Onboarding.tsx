@@ -7,8 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { Stepper } from '@/components/ui/stepper';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import pawfectLogo from '@/assets/pawfect-logo.png';
 
@@ -16,6 +16,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const totalSteps = 3;
+  const stepLabels = ['Basic Info', 'Personality', 'Location'];
 
   // Dog traits state
   const [dogData, setDogData] = useState({
@@ -54,23 +55,18 @@ const Onboarding = () => {
     }
   };
 
-  const progress = (step / totalSteps) * 100;
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 p-4 md:p-8">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-center mb-8">
           <div className="flex items-center gap-3">
             <img src={pawfectLogo} alt="Pawfect" className="h-10 w-auto" />
           </div>
-          <div className="text-sm text-muted-foreground">
-            Step {step} of {totalSteps}
-          </div>
         </div>
 
-        {/* Progress Bar */}
-        <Progress value={progress} className="mb-8" />
+        {/* Stepper */}
+        <Stepper steps={stepLabels} currentStep={step} className="mb-8" />
 
         {/* Form Card */}
         <Card className="shadow-xl">
