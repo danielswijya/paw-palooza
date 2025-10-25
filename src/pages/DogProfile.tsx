@@ -276,10 +276,6 @@ const DogProfile = () => {
                   <span>Leash trained</span>
                 </div>
               </div>
-
-              <button className="border border-foreground px-6 py-3 rounded-lg font-semibold hover:bg-muted transition-colors">
-                Show all amenities
-              </button>
             </div>
 
             <Separator />
@@ -352,7 +348,7 @@ const DogProfile = () => {
 
             {/* Location */}
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold">Where you'll meet</h3>
+              <h3 className="text-xl font-semibold">Places that fit!</h3>
               <div className="flex items-start gap-2">
                 <MapPin className="w-5 h-5 mt-1 flex-shrink-0" />
                 <div>
@@ -371,10 +367,6 @@ const DogProfile = () => {
             <Card className="sticky top-24 p-6 shadow-xl border-2">
               <div className="space-y-6">
                 <div>
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-xl font-semibold">Free</span>
-                    <span className="text-muted-foreground">playdate</span>
-                  </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Star className="w-4 h-4 fill-current" />
                     <span className="font-semibold">4.95</span>

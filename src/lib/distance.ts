@@ -19,7 +19,7 @@ export function calculateDistance(
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const distance = R * c;
   
-  return Math.round(distance * 10) / 10; // Round to 1 decimal place
+  return Math.round(distance * 100) / 100; // Round to 2 decimal places
 }
 
 function toRad(degrees: number): number {
