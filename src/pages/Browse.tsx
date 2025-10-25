@@ -49,7 +49,7 @@ const Browse = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted/30">
       {/* Header */}
       <header className="border-b bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -121,14 +121,6 @@ const Browse = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Location Banner */}
-        <div className="mb-8 animate-fade-in">
-          <p className="text-sm text-muted-foreground mb-1">Your location</p>
-          <h2 className="text-2xl sm:text-3xl font-bold">
-            {userLocation.city}, {userLocation.state}
-          </h2>
-        </div>
-
         {/* For You Section */}
         {!searchQuery && (
           <section className="mb-12 animate-fade-in">
