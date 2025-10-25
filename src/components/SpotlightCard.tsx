@@ -10,7 +10,7 @@ interface SpotlightCardProps {
 export const SpotlightCard = ({ 
   children, 
   className,
-  spotlightColor = 'rgba(255, 127, 80, 0.08)' // Faint coral
+  spotlightColor = 'rgba(255, 127, 80, 0.18)' // Faint coral
 }: SpotlightCardProps) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);

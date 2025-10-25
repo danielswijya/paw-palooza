@@ -15,7 +15,7 @@ const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
   return (
     <SpotlightCard 
       className="group"
-      spotlightColor="rgba(255, 127, 80, 0.08)"
+      spotlightColor="rgba(255, 127, 80, 0.18)"
     >
       <Card 
         className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer relative"
