@@ -12,6 +12,18 @@ interface DogCardProps {
 }
 
 const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
+  // Generate random match percentage (60-98%)
+  const matchPercentage = Math.floor(Math.random() * 39) + 60;
+  
+  // Determine color based on match percentage
+  const getMatchColor = (percentage: number) => {
+    if (percentage >= 80) return { text: 'text-green-600', icon: 'text-green-600 fill-green-600' };
+    if (percentage >= 70) return { text: 'text-green-400', icon: 'text-green-400 fill-green-400' };
+    return { text: 'text-yellow-500', icon: 'text-yellow-500 fill-yellow-500' };
+  };
+  
+  const matchColor = getMatchColor(matchPercentage);
+  
   return (
     <SpotlightCard 
       className="group"
@@ -52,8 +64,8 @@ const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
             </span>
           </div>
           <div className="flex items-center text-xs mt-1">
-            <Heart className="w-3 h-3 mr-1 flex-shrink-0 fill-green-500 text-green-500" />
-            <span className="font-semibold text-green-500">85% Match</span>
+            <Heart className={`w-3 h-3 mr-1 flex-shrink-0 ${matchColor.icon}`} />
+            <span className={`font-semibold ${matchColor.text}`}>{matchPercentage}% Match</span>
           </div>
         </div>
 
