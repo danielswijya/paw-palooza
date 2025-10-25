@@ -1,4 +1,25 @@
-# Welcome to your Lovable project
+# Paw Palooza 🐕
+
+A dog dating and matching application built with React, TypeScript, and Supabase.
+
+## Project Structure
+
+```
+paw-palooza/
+├── frontend/          # React frontend application
+│   ├── src/          # Source code
+│   ├── public/       # Static assets
+│   └── package.json  # Frontend dependencies
+├── backend/           # Python backend compatibility system
+│   ├── vector_embedding.py
+│   ├── cosine_similarity.py
+│   ├── sentiment_analysis.py
+│   ├── compatibilitywithReviewsandRatings.py
+│   ├── test_compatibility.py
+│   └── requirements.txt
+├── supabase/         # Database migrations and config
+└── package.json      # Root package.json with workspace scripts
+```
 
 ## Project info
 
@@ -27,13 +48,31 @@ Follow these steps:
 git clone <YOUR_GIT_URL>
 
 # Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+cd paw-palooza
 
 # Step 3: Install the necessary dependencies.
-npm i
+npm run install:frontend
 
 # Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
+```
+
+The development server will be available at `http://localhost:8080`
+
+## Backend Setup
+
+To run the Python backend compatibility system:
+
+```sh
+# Install Python dependencies
+cd backend
+pip install -r requirements.txt
+
+# Run the compatibility tests
+python test_compatibility.py
+
+# Run individual modules
+python compatibilitywithReviewsandRatings.py
 ```
 
 **Edit a file directly in GitHub**

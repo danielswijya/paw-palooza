@@ -8,21 +8,25 @@ import { SpotlightCard } from '@/components/SpotlightCard';
 interface DogCardProps {
   dog: DogProfile;
   distance?: number;
+  compatibilityScore?: number;
   onClick?: () => void;
 }
 
-const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
-  // Generate random match percentage (60-98%)
-  const matchPercentage = Math.floor(Math.random() * 39) + 60;
+const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) => {
+  // Use compatibility score if provided, otherwise generate random match percentage
+  const matchPercentage = compatibilityScore 
+    ? Math.round(compatibilityScore * 100) 
+    : Math.floor(Math.random() * 39) + 60;
   
-  // Determine color based on match percentage
-  const getMatchColor = (percentage: number) => {
-    if (percentage >= 80) return { text: 'text-green-600', icon: 'text-green-600 fill-green-600' };
-    if (percentage >= 70) return { text: 'text-green-400', icon: 'text-green-400 fill-green-400' };
-    return { text: 'text-yellow-500', icon: 'text-yellow-500 fill-yellow-500' };
+  // Determine color based on compatibility score
+  const getMatchColor = (score: number) => {
+    if (score >= 0.8) return { text: 'text-green-600', icon: 'text-green-600 fill-green-600', bg: 'bg-green-50' };
+    if (score >= 0.6) return { text: 'text-green-500', icon: 'text-green-500 fill-green-500', bg: 'bg-green-50' };
+    if (score >= 0.4) return { text: 'text-yellow-500', icon: 'text-yellow-500 fill-yellow-500', bg: 'bg-yellow-50' };
+    return { text: 'text-orange-500', icon: 'text-orange-500 fill-orange-500', bg: 'bg-orange-50' };
   };
   
-  const matchColor = getMatchColor(matchPercentage);
+  const matchColor = getMatchColor(compatibilityScore || 0.5);
   
   return (
     <SpotlightCard 
@@ -63,9 +67,11 @@ const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
               {dog.location.city}, {dog.location.state}
             </span>
           </div>
-          <div className="flex items-center text-xs mt-1">
+          <div className={`flex items-center text-xs mt-1 px-2 py-1 rounded-full ${matchColor.bg}`}>
             <Heart className={`w-3 h-3 mr-1 flex-shrink-0 ${matchColor.icon}`} />
-            <span className={`font-semibold ${matchColor.text}`}>{matchPercentage}% Match</span>
+            <span className={`font-semibold ${matchColor.text}`}>
+              {compatibilityScore ? `${(compatibilityScore * 100).toFixed(1)}% Compatible` : `${matchPercentage}% Match`}
+            </span>
           </div>
         </div>
 
@@ -102,6 +108,13 @@ const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
             <span className="font-medium">{dog.traits.temperament}/5</span>
           </div>
         </div>
+
+        {/* Compatibility Score Debug Info */}
+        {compatibilityScore && (
+          <div className="text-xs text-muted-foreground pt-1 border-t border-muted">
+            <span className="font-mono">Score: {compatibilityScore.toFixed(4)}</span>
+          </div>
+        )}
       </div>
     </Card>
     </SpotlightCard>

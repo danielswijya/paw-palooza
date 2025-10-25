@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userLocation } from '@/data/mockDogs';
 import DogCard from '@/components/DogCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { User, Settings, Search, LogIn, ClipboardList, MessageSquare } from 'lucide-react';
+import { User, Settings, Search, LogIn, ClipboardList, MessageSquare, Heart } from 'lucide-react';
 import { calculateDistance } from '@/lib/distance';
 import { DogProfile } from '@/types/dog';
 import {
@@ -16,11 +16,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import pawfectLogo from '@/assets/pawfect-logo.png';
 import { useDogs } from '@/hooks/useDogs';
+import { rankDogsByCompatibility, getCurrentUserDog, CompatibilityResult } from '@/lib/compatibility';
 
 const Browse = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const { data: dogs = [], isLoading } = useDogs();
+
+  // Get current user's dog for compatibility calculations
+  const currentUserDog = getCurrentUserDog();
 
   // Calculate distances and sort by proximity
   const dogsWithDistance = dogs.map(dog => ({
@@ -33,10 +37,24 @@ const Browse = () => {
     ),
   }));
 
-  // For You section - closest dogs
-  const forYouDogs = [...dogsWithDistance]
-    .sort((a, b) => a.distance - b.distance)
-    .slice(0, 3);
+  // For You section - dogs ranked by compatibility score
+  const forYouDogs = useMemo(() => {
+    if (dogsWithDistance.length === 0) return [];
+    
+    // Calculate compatibility scores for all dogs
+    const compatibilityResults = rankDogsByCompatibility(currentUserDog, dogsWithDistance);
+    
+    // Get the top 3 most compatible dogs
+    const topCompatibleDogs = compatibilityResults
+      .slice(0, 3)
+      .map(result => {
+        const dog = dogsWithDistance.find(d => d.id === result.dogId);
+        return dog ? { ...dog, compatibilityScore: result.compatibilityScore } : null;
+      })
+      .filter(Boolean) as (DogProfile & { compatibilityScore: number })[];
+    
+    return topCompatibleDogs;
+  }, [dogsWithDistance, currentUserDog]);
 
   // All listings
   const allDogs = searchQuery
@@ -128,9 +146,12 @@ const Browse = () => {
           <section className="mb-12 animate-fade-in">
             <div className="flex items-baseline justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold mb-1">For You</h2>
+                <h2 className="text-2xl font-bold mb-1 flex items-center gap-2">
+                  <Heart className="w-6 h-6 text-red-500" />
+                  For You
+                </h2>
                 <p className="text-sm text-muted-foreground">
-                  Dogs closest to you in {userLocation.city}
+                  Dogs with the highest compatibility scores based on traits, reviews, and ratings
                 </p>
               </div>
             </div>
@@ -145,6 +166,7 @@ const Browse = () => {
                   <DogCard 
                     dog={dog} 
                     distance={dog.distance}
+                    compatibilityScore={dog.compatibilityScore}
                     onClick={() => handleCardClick(dog)}
                   />
                 </div>

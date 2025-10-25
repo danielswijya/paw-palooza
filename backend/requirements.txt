@@ -1,0 +1,11 @@
+# Core dependencies for dog dating app compatibility system
+numpy>=1.21.0
+supabase>=1.0.0
+
+# Sentiment analysis
+textblob>=0.17.0
+vaderSentiment>=3.3.0
+
+# Development and testing
+pytest>=7.0.0
+pytest-cov>=4.0.0
