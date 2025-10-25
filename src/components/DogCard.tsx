@@ -1,5 +1,5 @@
 import { DogProfile } from '@/types/dog';
-import { MapPin } from 'lucide-react';
+import { MapPin, Heart } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatDistance } from '@/lib/distance';
@@ -50,6 +50,10 @@ const DogCard = ({ dog, distance, onClick }: DogCardProps) => {
             <span className="line-clamp-1">
               {dog.location.city}, {dog.location.state}
             </span>
+          </div>
+          <div className="flex items-center text-xs mt-1">
+            <Heart className="w-3 h-3 mr-1 flex-shrink-0 fill-green-500 text-green-500" />
+            <span className="font-semibold text-green-500">85% Match</span>
           </div>
         </div>
 
