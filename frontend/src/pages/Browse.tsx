@@ -4,7 +4,7 @@ import { userLocation } from '@/data/mockDogs';
 import DogCard from '@/components/DogCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { User, Settings, Search, LogIn, ClipboardList, MessageSquare, Heart } from 'lucide-react';
+import { User, Settings, Search, LogIn, ClipboardList, MessageSquare, Heart, LayoutDashboard } from 'lucide-react';
 import { calculateDistance } from '@/lib/distance';
 import { DogProfile } from '@/types/dog';
 import {
@@ -16,12 +16,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import pawfectLogo from '@/assets/pawfect-logo.png';
 import { useDogs } from '@/hooks/useDogs';
+import { useAuth } from '@/hooks/useAuth';
 import { rankDogsByCompatibility, getCurrentUserDog, CompatibilityResult } from '@/lib/compatibility';
 
 const Browse = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const { data: dogs = [], isLoading } = useDogs();
+  const { user } = useAuth();
 
   // Get current user's dog for compatibility calculations
   const currentUserDog = getCurrentUserDog();
@@ -39,16 +41,22 @@ const Browse = () => {
 
   // For You section - dogs ranked by compatibility score
   const forYouDogs = useMemo(() => {
-    if (dogsWithDistance.length === 0) return [];
+    if (dogsWithDistance.length === 0 || !currentUserDog) return [];
     
-    // Calculate compatibility scores for all dogs
-    const compatibilityResults = rankDogsByCompatibility(currentUserDog, dogsWithDistance);
+    // Filter dogs from the same state as the user's dog
+    const sameStateDogs = dogsWithDistance.filter(dog => 
+      dog.location.state === currentUserDog.location.state
+    );
     
-    // Get the top 3 most compatible dogs
+    // Calculate compatibility scores for dogs in the same state
+    const compatibilityResults = rankDogsByCompatibility(currentUserDog, sameStateDogs);
+    
+    // Get the top 3 most compatible dogs (only if they meet minimum compatibility threshold)
     const topCompatibleDogs = compatibilityResults
+      .filter(result => result.isCompatible) // Only show compatible dogs
       .slice(0, 3)
       .map(result => {
-        const dog = dogsWithDistance.find(d => d.id === result.dogId);
+        const dog = sameStateDogs.find(d => d.id === result.dogId);
         return dog ? { ...dog, compatibilityScore: result.compatibilityScore } : null;
       })
       .filter(Boolean) as (DogProfile & { distance: number; compatibilityScore: number })[];
@@ -56,13 +64,23 @@ const Browse = () => {
     return topCompatibleDogs;
   }, [dogsWithDistance, currentUserDog]);
 
-  // All listings
-  const allDogs = searchQuery
-    ? dogsWithDistance.filter(dog =>
+  // All listings - filter by same state as user's dog
+  const allDogs = useMemo(() => {
+    // Filter dogs from the same state as the user's dog
+    const sameStateDogs = dogsWithDistance.filter(dog => 
+      currentUserDog && dog.location.state === currentUserDog.location.state
+    );
+    
+    // Apply search filter if there's a search query
+    if (searchQuery) {
+      return sameStateDogs.filter(dog =>
         dog.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         dog.traits.breed.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : dogsWithDistance;
+      );
+    }
+    
+    return sameStateDogs;
+  }, [dogsWithDistance, searchQuery, currentUserDog]);
 
   const handleCardClick = (dog: DogProfile) => {
     navigate(`/dog/${dog.id}`);
@@ -104,15 +122,31 @@ const Browse = () => {
                     <MessageSquare className="w-4 h-4 mr-2" />
                     Messages
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/auth')}>
-                    <LogIn className="w-4 h-4 mr-2" />
-                    Login / Sign Up
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/dog-onboarding')}>
-                    <ClipboardList className="w-4 h-4 mr-2" />
-                    Add Your Dog
-                  </DropdownMenuItem>
+                  {user ? (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                        <LayoutDashboard className="w-4 h-4 mr-2" />
+                        Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/dog-onboarding')}>
+                        <ClipboardList className="w-4 h-4 mr-2" />
+                        Add Your Dog
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => navigate('/auth')}>
+                        <LogIn className="w-4 h-4 mr-2" />
+                        Login / Sign Up
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/dog-onboarding')}>
+                        <ClipboardList className="w-4 h-4 mr-2" />
+                        Add Your Dog
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
                     <Settings className="w-4 h-4 mr-2" />
@@ -160,7 +194,7 @@ const Browse = () => {
               {forYouDogs.map((dog, index) => (
                 <div
                   key={dog.id}
-                  className="animate-fade-in"
+                  className="animate-fade-in h-full"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
                   <DogCard 
@@ -197,7 +231,7 @@ const Browse = () => {
               {allDogs.map((dog, index) => (
                 <div
                   key={dog.id}
-                  className="animate-fade-in"
+                  className="animate-fade-in h-full"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <DogCard 
