@@ -95,7 +95,7 @@ const Browse = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <img src={pawfectLogo} alt="Pawfect" className="h-12 w-auto" />
+              <img src={pawfectLogo} alt="Pawfect" className="h-12 w-auto brightness-110 contrast-125" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.1))' }} />
             </div>
 
             {/* Search Bar */}
