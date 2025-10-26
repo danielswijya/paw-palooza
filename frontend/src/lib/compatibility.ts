@@ -223,6 +223,25 @@ function getReviewData(dogId: string): ReviewData {
 }
 
 /**
+ * Calculate cosine similarity only (for DogCard display)
+ */
+export function calculateCosineSimilarityOnly(
+  targetDog: DogProfile,
+  candidateDog: DogProfile
+): number {
+  // Convert traits to vector format
+  const targetTraits = convertToVectorTraits(targetDog.traits);
+  const candidateTraits = convertToVectorTraits(candidateDog.traits);
+  
+  // Create vector embeddings
+  const targetEmbedding = createVectorEmbedding(targetTraits);
+  const candidateEmbedding = createVectorEmbedding(candidateTraits);
+  
+  // Calculate and return only cosine similarity
+  return calculateCosineSimilarity(targetEmbedding, candidateEmbedding);
+}
+
+/**
  * Calculate compatibility between two dogs
  */
 export function calculateDogCompatibility(
@@ -262,7 +281,7 @@ export function calculateDogCompatibility(
     compatibilityScore,
     cosineSimilarity,
     sentimentScore: candidateSentiment,
-    isCompatible: compatibilityScore >= 0.4
+    isCompatible: compatibilityScore >= 0.85
   };
 }
 

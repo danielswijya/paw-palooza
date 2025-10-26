@@ -18,7 +18,7 @@ import pawfectLogo from '@/assets/pawfect-logo.png';
 import { useDogs } from '@/hooks/useDogs';
 import { useAuth } from '@/hooks/useAuth';
 import { useOwnerProfile } from '@/hooks/useOwnerProfile';
-import { rankDogsByCompatibility, getCurrentUserDog, CompatibilityResult } from '@/lib/compatibility';
+import { rankDogsByCompatibility, getCurrentUserDog, CompatibilityResult, calculateCosineSimilarityOnly, calculateDogCompatibility } from '@/lib/compatibility';
 
 const Browse = () => {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ const Browse = () => {
       ),
     }));
 
-  // For You section - dogs ranked by compatibility score
+  // For You section - dogs with cosine similarity >= 0.85 threshold
   const forYouDogs = useMemo(() => {
     if (dogsWithDistance.length === 0 || !currentUserDog) return [];
     
@@ -52,39 +52,35 @@ const Browse = () => {
       dog.location.state === currentUserDog.location.state
     );
     
-    // Calculate compatibility scores for dogs in the same state
-    const compatibilityResults = rankDogsByCompatibility(currentUserDog, sameStateDogs);
-    
-    // Get the top 3 most compatible dogs (only if they meet minimum compatibility threshold)
-    const topCompatibleDogs = compatibilityResults
-      .filter(result => result.isCompatible) // Only show compatible dogs
-      .slice(0, 3)
-      .map(result => {
-        const dog = sameStateDogs.find(d => d.id === result.dogId);
-        return dog ? { ...dog, compatibilityScore: result.compatibilityScore } : null;
+    // Calculate cosine similarity for each dog and filter by 0.85 threshold
+    const compatibleDogs = sameStateDogs
+      .map(dog => {
+        const cosineSimilarity = calculateCosineSimilarityOnly(currentUserDog, dog);
+        const fullCompatibility = calculateDogCompatibility(currentUserDog, dog);
+        return { 
+          ...dog, 
+          compatibilityScore: cosineSimilarity, // For display
+          fullCompatibilityScore: fullCompatibility.compatibilityScore // For sorting
+        };
       })
-      .filter(Boolean) as (DogProfile & { distance: number; compatibilityScore: number })[];
+      .filter(dog => dog.compatibilityScore >= 0.85) // Only dogs meeting 0.85 cosine threshold
+      .sort((a, b) => b.fullCompatibilityScore - a.fullCompatibilityScore); // Sort by full compatibility score
     
-    return topCompatibleDogs;
+    return compatibleDogs;
   }, [dogsWithDistance, currentUserDog]);
 
-  // All listings - filter by same state as user's dog
+  // All listings - show all dogs (regardless of compatibility)
   const allDogs = useMemo(() => {
-    // Filter dogs from the same state as the user's dog
-    const sameStateDogs = dogsWithDistance.filter(dog => 
-      currentUserDog && dog.location.state === currentUserDog.location.state
-    );
-    
     // Apply search filter if there's a search query
     if (searchQuery) {
-      return sameStateDogs.filter(dog =>
+      return dogsWithDistance.filter(dog =>
         dog.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         dog.traits.breed.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
     
-    return sameStateDogs;
-  }, [dogsWithDistance, searchQuery, currentUserDog]);
+    return dogsWithDistance;
+  }, [dogsWithDistance, searchQuery]);
 
   const handleCardClick = (dog: DogProfile) => {
     navigate(`/dog/${dog.id}`);
@@ -236,6 +232,7 @@ const Browse = () => {
                   <DogCard 
                     dog={dog} 
                     distance={dog.distance}
+                    compatibilityScore={currentUserDog ? calculateCosineSimilarityOnly(currentUserDog, dog) : undefined}
                     onClick={() => handleCardClick(dog)}
                   />
                 </div>

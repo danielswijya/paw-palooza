@@ -43,10 +43,10 @@ const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) =
     fetchReviews();
   }, [dog.id]);
 
-  // Use compatibility score if provided, otherwise generate random match percentage
+  // Use compatibility score if provided, otherwise show 0
   const matchPercentage = compatibilityScore 
     ? Math.round(compatibilityScore * 100) 
-    : Math.floor(Math.random() * 39) + 60;
+    : 0;
   
   // Determine color based on compatibility score
   const getMatchColor = (score: number) => {
