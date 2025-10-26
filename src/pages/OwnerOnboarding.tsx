@@ -11,6 +11,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useOwnerProfile } from '@/hooks/useOwnerProfile';
 import { useToast } from '@/hooks/use-toast';
+import LocationAutocomplete from '@/components/LocationAutocomplete';
 import pawfectLogo from '@/assets/pawfect-logo.png';
 
 const OwnerOnboarding = () => {
@@ -29,6 +30,8 @@ const OwnerOnboarding = () => {
     about: '',
     city: '',
     state: '',
+    lat: undefined as number | undefined,
+    lng: undefined as number | undefined,
   });
 
   useEffect(() => {
@@ -52,6 +55,8 @@ const OwnerOnboarding = () => {
         about: profile.about || '',
         city: profile.city || '',
         state: profile.state || '',
+        lat: profile.lat,
+        lng: profile.lng,
       });
     }
   }, [profile]);
@@ -68,6 +73,8 @@ const OwnerOnboarding = () => {
         about: formData.about,
         city: formData.city,
         state: formData.state,
+        lat: formData.lat,
+        lng: formData.lng,
       });
 
       if (error) {
@@ -107,7 +114,7 @@ const OwnerOnboarding = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 p-4 md:p-8">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-center mb-8">
-          <img src={pawfectLogo} alt="Pawfect" className="h-10 w-auto" />
+          <img src={pawfectLogo} alt="Pawfect" className="h-20 w-auto" />
         </div>
 
         <Stepper steps={stepLabels} currentStep={step} className="mb-8" />
@@ -179,27 +186,21 @@ const OwnerOnboarding = () => {
 
             {step === 2 && (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="city">City *</Label>
-                    <Input
-                      id="city"
-                      placeholder="Boston"
-                      value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="state">State *</Label>
-                    <Input
-                      id="state"
-                      placeholder="MA"
-                      value={formData.state}
-                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    />
-                  </div>
-                </div>
+                <LocationAutocomplete
+                  label="Location"
+                  placeholder="Start typing your city..."
+                  required
+                  initialValue={formData.city && formData.state ? `${formData.city}, ${formData.state}` : ''}
+                  onLocationSelect={(location) => {
+                    setFormData({
+                      ...formData,
+                      city: location.city,
+                      state: location.state,
+                      lat: location.lat,
+                      lng: location.lng,
+                    });
+                  }}
+                />
 
                 <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
                   <p className="text-sm text-foreground">

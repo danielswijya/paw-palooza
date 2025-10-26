@@ -118,7 +118,7 @@ const DogOnboarding = () => {
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 p-4 md:p-8">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-center mb-8">
-          <img src={pawfectLogo} alt="Pawfect" className="h-10 w-auto" />
+          <img src={pawfectLogo} alt="Pawfect" className="h-20 w-auto" />
         </div>
 
         <Stepper steps={stepLabels} currentStep={step} className="mb-8" />
