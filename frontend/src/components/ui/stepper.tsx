@@ -9,7 +9,7 @@ interface StepperProps {
 
 export const Stepper = ({ steps, currentStep, className }: StepperProps) => {
   return (
-    <div className={cn('w-full flex justify-center', className)}>
+    <div className={cn('w-full flex justify-center items-center', className)}>
       <div className="flex items-center justify-between max-w-2xl w-full">
         {steps.map((step, index) => {
           const stepNumber = index + 1;
@@ -17,7 +17,7 @@ export const Stepper = ({ steps, currentStep, className }: StepperProps) => {
           const isCurrent = stepNumber === currentStep;
           
           return (
-            <div key={index} className="flex items-center flex-1">
+            <div key={index} className="flex items-center">
               {/* Step Circle */}
               <div className="flex flex-col items-center">
                 <div

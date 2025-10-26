@@ -168,6 +168,7 @@ const Dashboard = () => {
                     <DogCard 
                       dog={dog} 
                       onClick={undefined}
+                      hideMatchPercentage={true}
                     />
                   </div>
                 ))}

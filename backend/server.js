@@ -10,6 +10,7 @@ const ownersRoutes = require('./routes/owners');
 const dogsRoutes = require('./routes/dogs');
 const reviewsRoutes = require('./routes/reviews');
 const breedsRoutes = require('./routes/breeds');
+const sentimentRoutes = require('./routes/sentiment');
 
 // Middleware
 app.use(cors());
@@ -20,6 +21,7 @@ app.use('/api/owners', ownersRoutes);
 app.use('/api/dogs', dogsRoutes);
 app.use('/api/reviews', reviewsRoutes);
 app.use('/api/breeds', breedsRoutes);
+app.use('/api/sentiment', sentimentRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

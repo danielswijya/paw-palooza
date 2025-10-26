@@ -13,8 +13,8 @@ export interface DogTraitsVector {
   weight: number;
   sex: number; // 0 for female, 1 for male
   neutered: number; // 0 for no, 1 for yes
-  sociability: number; // 1-10 scale
-  temperament: number; // 1-10 scale
+  sociability: number; // 1-5 scale
+  temperament: number; // 1-5 scale
 }
 
 export interface CompatibilityResult {
@@ -31,70 +31,6 @@ export interface ReviewData {
   ratingsSum: number;
 }
 
-// Mock review data for testing
-const mockReviews: ReviewData[] = [
-  {
-    dogId: '1',
-    reviews: [
-      "This dog is absolutely amazing! So friendly and well-behaved.",
-      "Great companion, very loving and gentle.",
-      "Perfect temperament and very smart.",
-      "Incredible dog! Highly recommend to anyone!"
-    ],
-    ratingsSum: 45
-  },
-  {
-    dogId: '2',
-    reviews: [
-      "Wonderful dog! Perfect temperament and very smart.",
-      "Excellent pet, highly recommend!",
-      "Very playful and energetic.",
-      "Amazing personality and so well-trained!"
-    ],
-    ratingsSum: 38
-  },
-  {
-    dogId: '3',
-    reviews: [
-      "Good dog overall, but can be a bit shy.",
-      "Nice dog, takes time to warm up.",
-      "Decent companion.",
-      "Okay dog, nothing too special."
-    ],
-    ratingsSum: 25
-  },
-  {
-    dogId: '4',
-    reviews: [
-      "Fantastic dog! So energetic and fun!",
-      "Perfect playmate for other dogs.",
-      "Amazing temperament and very social.",
-      "Best dog ever! So loving and playful!"
-    ],
-    ratingsSum: 42
-  },
-  {
-    dogId: '5',
-    reviews: [
-      "Great dog with a wonderful personality.",
-      "Very well-behaved and friendly.",
-      "Excellent companion for families.",
-      "Sweet and gentle dog!"
-    ],
-    ratingsSum: 35
-  },
-  {
-    dogId: '6',
-    reviews: [
-      "Nice dog but can be a bit stubborn.",
-      "Good overall, needs some training.",
-      "Decent dog, average temperament.",
-      "Okay pet, nothing extraordinary."
-    ],
-    ratingsSum: 20
-  }
-];
-
 /**
  * Convert DogTraits to vector format for compatibility calculations
  */
@@ -104,8 +40,8 @@ function convertToVectorTraits(traits: DogTraits): DogTraitsVector {
     weight: traits.weight,
     sex: traits.sex === 'male' ? 1 : 0,
     neutered: traits.neutered ? 1 : 0,
-    sociability: Math.round(traits.dogSociability * 2), // Convert 1-5 to 1-10 scale
-    temperament: Math.round(traits.temperament * 2) // Convert 1-5 to 1-10 scale
+    sociability: traits.dogSociability, // Keep original 1-5 scale
+    temperament: traits.temperament // Keep original 1-5 scale
   };
 }
 
@@ -119,8 +55,8 @@ function createVectorEmbedding(traits: DogTraitsVector): number[] {
     weight: [1, 200],
     sex: [0, 1],
     neutered: [0, 1],
-    sociability: [1, 10],
-    temperament: [1, 10]
+    sociability: [1, 5], // Updated to 1-5 scale
+    temperament: [1, 5] // Updated to 1-5 scale
   };
 
   // Weights for each trait
@@ -164,7 +100,45 @@ function calculateCosineSimilarity(vec1: number[], vec2: number[]): number {
 }
 
 /**
- * Simple sentiment analysis for review text
+ * Analyze sentiment using the backend API
+ */
+async function analyzeSentimentAPI(reviews: string[]): Promise<number> {
+  if (reviews.length === 0) return 0;
+  
+  try {
+    const response = await fetch('http://localhost:3001/api/sentiment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ reviews }),
+    });
+    
+    if (!response.ok) {
+      console.warn('Failed to analyze sentiment, using fallback');
+      return analyzeSentimentFallback(reviews);
+    }
+    
+    const data = await response.json();
+    return data.averageSentiment || 0;
+  } catch (error) {
+    console.warn('Error analyzing sentiment, using fallback:', error);
+    return analyzeSentimentFallback(reviews);
+  }
+}
+
+/**
+ * Fallback sentiment analysis for when backend is unavailable
+ */
+function analyzeSentimentFallback(reviews: string[]): number {
+  if (reviews.length === 0) return 0;
+  
+  const sentiments = reviews.map(analyzeSentiment);
+  return sentiments.reduce((sum, sentiment) => sum + sentiment, 0) / sentiments.length;
+}
+
+/**
+ * Simple sentiment analysis for review text (fallback only)
  */
 function analyzeSentiment(text: string): number {
   const positiveWords = ['amazing', 'wonderful', 'great', 'excellent', 'perfect', 'friendly', 'loving', 'gentle', 'smart', 'playful', 'energetic', 'good', 'nice', 'recommend'];
@@ -189,13 +163,12 @@ function analyzeSentiment(text: string): number {
 }
 
 /**
- * Calculate average sentiment for a list of reviews
+ * Calculate average sentiment for a list of reviews using backend API
  */
-function calculateAverageSentiment(reviews: string[]): number {
+async function calculateAverageSentiment(reviews: string[]): Promise<number> {
   if (reviews.length === 0) return 0;
   
-  const sentiments = reviews.map(analyzeSentiment);
-  return sentiments.reduce((sum, sentiment) => sum + sentiment, 0) / sentiments.length;
+  return await analyzeSentimentAPI(reviews);
 }
 
 /**
@@ -215,11 +188,29 @@ function calculateCompatibilityScore(
 }
 
 /**
- * Get review data for a dog
+ * Get review data for a dog from the API
  */
-function getReviewData(dogId: string): ReviewData {
-  const reviewData = mockReviews.find(r => r.dogId === dogId);
-  return reviewData || { dogId, reviews: [], ratingsSum: 0 };
+async function getReviewData(dogId: string): Promise<ReviewData> {
+  try {
+    const response = await fetch(`http://localhost:3001/api/reviews?dog_id=${dogId}`);
+    if (!response.ok) {
+      console.warn(`Failed to fetch reviews for dog ${dogId}`);
+      return { dogId, reviews: [], ratingsSum: 0 };
+    }
+    
+    const reviews = await response.json();
+    const reviewTexts = reviews.map((review: any) => review.description || '');
+    const ratingsSum = reviews.reduce((sum: number, review: any) => sum + (review.rating || 0), 0);
+    
+    return {
+      dogId,
+      reviews: reviewTexts,
+      ratingsSum
+    };
+  } catch (error) {
+    console.warn(`Error fetching reviews for dog ${dogId}:`, error);
+    return { dogId, reviews: [], ratingsSum: 0 };
+  }
 }
 
 /**
@@ -244,10 +235,10 @@ export function calculateCosineSimilarityOnly(
 /**
  * Calculate compatibility between two dogs
  */
-export function calculateDogCompatibility(
+export async function calculateDogCompatibility(
   targetDog: DogProfile,
   candidateDog: DogProfile
-): CompatibilityResult {
+): Promise<CompatibilityResult> {
   // Convert traits to vector format
   const targetTraits = convertToVectorTraits(targetDog.traits);
   const candidateTraits = convertToVectorTraits(candidateDog.traits);
@@ -259,13 +250,17 @@ export function calculateDogCompatibility(
   // Calculate cosine similarity
   const cosineSimilarity = calculateCosineSimilarity(targetEmbedding, candidateEmbedding);
   
-  // Get review data
-  const targetReviews = getReviewData(targetDog.id);
-  const candidateReviews = getReviewData(candidateDog.id);
+  // Get review data from API
+  const [targetReviews, candidateReviews] = await Promise.all([
+    getReviewData(targetDog.id),
+    getReviewData(candidateDog.id)
+  ]);
   
-  // Calculate sentiment scores
-  const targetSentiment = calculateAverageSentiment(targetReviews.reviews);
-  const candidateSentiment = calculateAverageSentiment(candidateReviews.reviews);
+  // Calculate sentiment scores using backend API
+  const [targetSentiment, candidateSentiment] = await Promise.all([
+    calculateAverageSentiment(targetReviews.reviews),
+    calculateAverageSentiment(candidateReviews.reviews)
+  ]);
   
   // Calculate overall compatibility score
   const compatibilityScore = calculateCompatibilityScore(
@@ -288,46 +283,16 @@ export function calculateDogCompatibility(
 /**
  * Rank dogs by compatibility score for the "For You" section
  */
-export function rankDogsByCompatibility(
+export async function rankDogsByCompatibility(
   targetDog: DogProfile,
   candidateDogs: DogProfile[]
-): CompatibilityResult[] {
-  const results = candidateDogs.map(candidate => 
-    calculateDogCompatibility(targetDog, candidate)
+): Promise<CompatibilityResult[]> {
+  const results = await Promise.all(
+    candidateDogs.map(candidate => 
+      calculateDogCompatibility(targetDog, candidate)
+    )
   );
   
   // Sort by compatibility score in descending order
   return results.sort((a, b) => b.compatibilityScore - a.compatibilityScore);
-}
-
-/**
- * Get the current user's dog (mock implementation)
- * In a real app, this would come from authentication/user context
- */
-export function getCurrentUserDog(): DogProfile {
-  // Mock user dog - in real app, this would be from user context
-  return {
-    id: 'user-dog',
-    name: 'Buddy',
-    images: ['/placeholder.svg'],
-    location: {
-      city: 'Boston',
-      state: 'MA',
-      lat: 42.3601,
-      lng: -71.0589
-    },
-    bio: 'Friendly and energetic dog looking for playmates!',
-    traits: {
-      breed: 'Golden Retriever',
-      age: 3,
-      weight: 65,
-      sex: 'male',
-      neutered: true,
-      vaccinated: true,
-      dogSociability: 4,
-      humanSociability: 5,
-      temperament: 4
-    },
-    ownerId: 'user-1'
-  };
 }

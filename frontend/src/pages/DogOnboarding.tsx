@@ -15,6 +15,7 @@ import { useOwnerProfile } from '@/hooks/useOwnerProfile';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import pawfectLogo from '@/assets/pawfect-logo.png';
+import { useBreeds } from '@/hooks/useBreeds';
 import ImageUpload from '@/components/ImageUpload';
 
 const DogOnboarding = () => {
@@ -22,6 +23,7 @@ const DogOnboarding = () => {
   const { user, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading } = useOwnerProfile();
   const { toast } = useToast();
+  const { data: breeds, isLoading: breedsLoading } = useBreeds();
   const [step, setStep] = useState(1);
   const totalSteps = 2;
   const stepLabels = ['Basic Info', 'Personality & Health'];
@@ -158,12 +160,24 @@ const DogOnboarding = () => {
 
                 <div className="space-y-2">
                   <Label htmlFor="breed">Breed *</Label>
-                  <Input
-                    id="breed"
-                    placeholder="Golden Retriever"
-                    value={dogData.breed}
-                    onChange={(e) => setDogData({ ...dogData, breed: e.target.value })}
-                  />
+                  <Select value={dogData.breed} onValueChange={(value) => setDogData({ ...dogData, breed: value })} disabled={breedsLoading}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={breedsLoading ? "Loading breeds..." : "Select breed"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {breedsLoading ? (
+                        <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                          Loading breeds...
+                        </div>
+                      ) : (
+                        breeds?.map((breed) => (
+                          <SelectItem key={breed.id} value={breed.name}>
+                            {breed.name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

@@ -11,9 +11,10 @@ interface DogCardProps {
   distance?: number;
   compatibilityScore?: number;
   onClick?: () => void;
+  hideMatchPercentage?: boolean;
 }
 
-const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) => {
+const DogCard = ({ dog, distance, compatibilityScore, onClick, hideMatchPercentage = false }: DogCardProps) => {
   const [avgRating, setAvgRating] = useState<number | null>(null);
   const [hasReviews, setHasReviews] = useState(false);
 
@@ -101,12 +102,14 @@ const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) =
               {dog.location.city}, {dog.location.state}
             </span>
           </div>
-          <div className={`flex items-center text-xs px-2 py-1 rounded-full w-fit ${matchColor.bg}`}>
-            <Heart className={`w-3 h-3 mr-1 flex-shrink-0 ${matchColor.icon}`} />
-            <span className={`font-semibold ${matchColor.text}`}>
-              {compatibilityScore ? `${(compatibilityScore * 100).toFixed(1)}% Compatible` : `${matchPercentage}% Match`}
-            </span>
-          </div>
+          {!hideMatchPercentage && (
+            <div className={`flex items-center text-xs px-2 py-1 rounded-full w-fit ${matchColor.bg}`}>
+              <Heart className={`w-3 h-3 mr-1 flex-shrink-0 ${matchColor.icon}`} />
+              <span className={`font-semibold ${matchColor.text}`}>
+                {compatibilityScore ? `${(compatibilityScore * 100).toFixed(1)}% Compatible` : `${matchPercentage}% Match`}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Tags */}

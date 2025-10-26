@@ -17,8 +17,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { 
   MapPin, 
-  Heart, 
-  Share2, 
   ArrowLeft, 
   Star,
   Shield,
@@ -142,10 +140,6 @@ Best regards`;
     });
   };
 
-  const handleShare = () => {
-    toast.success('Link copied to clipboard!');
-  };
-
   const handleSubmitReview = async () => {
     if (!user || !profile || !dog) {
       toast.error('Please login to submit a review');
@@ -212,7 +206,18 @@ Best regards`;
   // Calculate compatibility score with the user's first dog (if they have one)
   const userDogs = allDogs?.filter(d => d.ownerId === profile?.id) || [];
   const userDog = userDogs[0]; // Use the first dog for compatibility
-  const compatibility = userDog ? calculateDogCompatibility(dog, userDog) : null;
+  const [compatibility, setCompatibility] = useState<any>(null);
+
+  useEffect(() => {
+    const calculateCompatibility = async () => {
+      if (userDog) {
+        const result = await calculateDogCompatibility(dog, userDog);
+        setCompatibility(result);
+      }
+    };
+    calculateCompatibility();
+  }, [userDog, dog]);
+
   const compatibilityPercentage = compatibility ? Math.round(compatibility.cosineSimilarity * 100) : 0;
 
   return (
@@ -230,23 +235,6 @@ Best regards`;
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div className="flex gap-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleShare}
-                className="rounded-full"
-              >
-                <Share2 className="h-4 w-4 mr-2" />
-                <span className="underline">Share</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="rounded-full"
-              >
-                <Heart className="h-4 w-4 mr-2" />
-                <span className="underline">Save</span>
-              </Button>
             </div>
           </div>
         </div>
@@ -569,14 +557,11 @@ Best regards`;
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <img src={pawfectLogo} alt="Pawfect" className="h-20 w-auto" />
+            </div>
+            <div className="flex gap-4 text-sm">
               <span className="text-sm text-muted-foreground">
                 © 2024 Pawfect, Inc.
               </span>
-            </div>
-            <div className="flex gap-4 text-sm">
-              <button className="hover:underline">Terms</button>
-              <button className="hover:underline">Privacy</button>
-              <button className="hover:underline">Support</button>
             </div>
           </div>
         </div>

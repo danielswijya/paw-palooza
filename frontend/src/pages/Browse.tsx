@@ -18,7 +18,7 @@ import pawfectLogo from '@/assets/pawfect-logo.png';
 import { useDogs } from '@/hooks/useDogs';
 import { useAuth } from '@/hooks/useAuth';
 import { useOwnerProfile } from '@/hooks/useOwnerProfile';
-import { rankDogsByCompatibility, getCurrentUserDog, CompatibilityResult, calculateCosineSimilarityOnly, calculateDogCompatibility } from '@/lib/compatibility';
+import { rankDogsByCompatibility, CompatibilityResult, calculateCosineSimilarityOnly, calculateDogCompatibility } from '@/lib/compatibility';
 
 const Browse = () => {
   const navigate = useNavigate();
@@ -28,7 +28,13 @@ const Browse = () => {
   const { profile } = useOwnerProfile();
 
   // Get current user's dog for compatibility calculations
-  const currentUserDog = getCurrentUserDog();
+  const currentUserDog = useMemo(() => {
+    if (!profile?.id || !dogs.length) return null;
+    
+    // Find the user's first dog from the actual database
+    const userDogs = dogs.filter(dog => dog.ownerId === profile.id);
+    return userDogs.length > 0 ? userDogs[0] : null;
+  }, [profile?.id, dogs]);
 
   // Filter out user's own dogs and calculate distances
   const dogsWithDistance = dogs
@@ -56,15 +62,14 @@ const Browse = () => {
     const compatibleDogs = sameStateDogs
       .map(dog => {
         const cosineSimilarity = calculateCosineSimilarityOnly(currentUserDog, dog);
-        const fullCompatibility = calculateDogCompatibility(currentUserDog, dog);
         return { 
           ...dog, 
           compatibilityScore: cosineSimilarity, // For display
-          fullCompatibilityScore: fullCompatibility.compatibilityScore // For sorting
+          fullCompatibilityScore: cosineSimilarity // For now, use cosine similarity for sorting
         };
       })
       .filter(dog => dog.compatibilityScore >= 0.85) // Only dogs meeting 0.85 cosine threshold
-      .sort((a, b) => b.fullCompatibilityScore - a.fullCompatibilityScore); // Sort by full compatibility score
+      .sort((a, b) => b.fullCompatibilityScore - a.fullCompatibilityScore); // Sort by compatibility score
     
     return compatibleDogs;
   }, [dogsWithDistance, currentUserDog]);
