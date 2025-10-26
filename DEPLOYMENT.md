@@ -14,7 +14,21 @@ git commit -m "Prepare for Vercel deployment"
 git push origin main
 ```
 
-### 1.2 Environment Variables Needed
+### 1.2 Environment Variables Setup
+
+**Create Backend .env File:**
+Create a `.env` file in the `backend/` directory with:
+```env
+# Supabase Configuration
+SUPABASE_URL=https://bdzdrpigbtqrfnwdeibf.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkemRycGlnYnRxcmZud2RlaWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MDI0NDksImV4cCI6MjA3Njk3ODQ0OX0.PuOjYconkFQ3UWT-UZX1sUliG5EKPwjsjF5nnR2m-BA
+
+# Server Configuration
+PORT=3001
+NODE_ENV=development
+```
+
+**Vercel Environment Variables:**
 You'll need to set these in Vercel dashboard:
 
 **Frontend Environment Variables:**
