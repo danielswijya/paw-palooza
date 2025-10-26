@@ -34,12 +34,15 @@ import pawfectLogo from '@/assets/pawfect-logo.png';
 import { useDog } from '@/hooks/useDogs';
 import { useAuth } from '@/hooks/useAuth';
 import { useOwnerProfile } from '@/hooks/useOwnerProfile';
+import { useDogs } from '@/hooks/useDogs';
+import { calculateDogCompatibility } from '@/lib/compatibility';
 import GoogleMap from '@/components/GoogleMap';
 
 const DogProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: dog, isLoading } = useDog(id || '');
+  const { data: allDogs } = useDogs();
   const { user } = useAuth();
   const { profile } = useOwnerProfile();
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
@@ -115,6 +118,19 @@ const DogProfile = () => {
       return;
     }
 
+    // Validate that description is not empty
+    if (!reviewDescription || reviewDescription.trim() === '') {
+      toast.error('Please write a review description');
+      return;
+    }
+
+    console.log('Submitting review:', {
+      rating: reviewRating,
+      description: reviewDescription,
+      dog_id: dog.id,
+      owner_id: profile.id,
+    });
+
     try {
       const response = await fetch('http://localhost:3001/api/reviews', {
         method: 'POST',
@@ -128,6 +144,8 @@ const DogProfile = () => {
           owner_id: profile.id,
         }),
       });
+
+      console.log('Review response status:', response.status);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -145,9 +163,9 @@ const DogProfile = () => {
         const reviewsData = await reviewsResponse.json();
         setReviews(reviewsData || []);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting review:', error);
-      toast.error('Failed to submit review');
+      toast.error(error?.message || 'Failed to submit review');
     }
   };
 
@@ -156,6 +174,12 @@ const DogProfile = () => {
     ? (reviews.reduce((sum, review) => sum + (review.rating || 0), 0) / reviews.length).toFixed(2)
     : '0.00';
   const totalReviews = reviews.length;
+
+  // Calculate compatibility score with the user's first dog (if they have one)
+  const userDogs = allDogs?.filter(d => d.ownerId === profile?.id) || [];
+  const userDog = userDogs[0]; // Use the first dog for compatibility
+  const compatibility = userDog ? calculateDogCompatibility(dog, userDog) : null;
+  const compatibilityPercentage = compatibility ? Math.round(compatibility.cosineSimilarity * 100) : 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -224,25 +248,17 @@ const DogProfile = () => {
           <div className="lg:col-span-2 space-y-8">
             {/* Header Info */}
             <div className="space-y-4">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="text-xl md:text-2xl font-semibold mb-1">
-                    {dog.traits.breed} in {dog.location.city}, {dog.location.state}
-                  </h2>
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <span>{dog.traits.age} years old</span>
-                    <span>·</span>
-                    <span>{dog.traits.weight} lbs</span>
-                    <span>·</span>
-                    <span>{dog.traits.sex}</span>
-                  </div>
+              <div>
+                <h2 className="text-xl md:text-2xl font-semibold mb-1">
+                  {dog.traits.breed} in {dog.location.city}
+                </h2>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <span>{dog.traits.age} years old</span>
+                  <span>·</span>
+                  <span>{dog.traits.weight} lbs</span>
+                  <span>·</span>
+                  <span>{dog.traits.sex}</span>
                 </div>
-                <Avatar className="w-14 h-14">
-                  <AvatarImage src={dog.images[0]} alt="Owner" />
-                  <AvatarFallback>
-                    {dog.name[0]}
-                  </AvatarFallback>
-                </Avatar>
               </div>
               
               <div className="flex items-center gap-2">
@@ -259,53 +275,11 @@ const DogProfile = () => {
 
             <Separator />
 
-            {/* Hosted by Section */}
-            <div className="flex items-start gap-4">
-              <Avatar className="w-12 h-12">
-                <AvatarImage src={dog.images[0]} alt="Owner" />
-                <AvatarFallback>{dog.owner?.name?.[0] || dog.name[0]}</AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="text-lg font-semibold">
-                  Hosted by {dog.owner?.name || 'Owner'}
-                </h3>
-                <p className="text-muted-foreground text-sm">Hosting since 2023</p>
-              </div>
-            </div>
-
-            <Separator />
-
-            {/* Key Features */}
-            <div className="space-y-6">
-              <div className="flex gap-4">
-                <Shield className="w-6 h-6 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold mb-1">Fully vaccinated</h4>
-                  <p className="text-muted-foreground text-sm">
-                    {dog.name} is up to date on all vaccinations and health checks
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Award className="w-6 h-6 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold mb-1">Great with other dogs</h4>
-                  <p className="text-muted-foreground text-sm">
-                    Rated {dog.traits.dogSociability}/5 for dog sociability
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Calendar className="w-6 h-6 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold mb-1">Available for playdates</h4>
-                  <p className="text-muted-foreground text-sm">
-                    Flexible schedule for meetups and playdates
-                  </p>
-                </div>
-              </div>
+            {/* Owned by Section */}
+            <div>
+              <h3 className="text-lg font-semibold">
+                Owned by {dog.owner?.name || 'Owner'}
+              </h3>
             </div>
 
             <Separator />
@@ -316,42 +290,30 @@ const DogProfile = () => {
               <p className="text-foreground leading-relaxed whitespace-pre-line">
                 {dog.bio}
               </p>
-              <button className="font-semibold underline flex items-center gap-1 hover:gap-2 transition-all">
-                Show more
-                <ChevronRight className="w-4 h-4" />
-              </button>
             </div>
 
             <Separator />
 
             {/* What this place offers */}
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold">What {dog.name} offers</h3>
+              <h3 className="text-xl font-semibold">{dog.name}'s Attributes</h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>Friendly with dogs</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>Good with people</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>Vaccinated</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5" />
+              <div className="space-y-3">
+                <div className="flex items-center justify-between max-w-md">
                   <span>Neutered/Spayed</span>
+                  <span className="font-semibold">{dog.traits.neutered ? 'Yes' : 'No'}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>House trained</span>
+                <div className="flex items-center justify-between max-w-md">
+                  <span>Vaccinated</span>
+                  <span className="font-semibold">{dog.traits.vaccinated ? 'Yes' : 'No'}</span>
                 </div>
-                <div className="flex items-center gap-3">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span>Leash trained</span>
+                <div className="flex items-center justify-between max-w-md">
+                  <span>Sociability</span>
+                  <span className="font-semibold">{dog.traits.dogSociability}/5</span>
+                </div>
+                <div className="flex items-center justify-between max-w-md">
+                  <span>Temperament</span>
+                  <span className="font-semibold">{dog.traits.temperament}/5</span>
                 </div>
               </div>
             </div>
@@ -479,7 +441,7 @@ const DogProfile = () => {
               <div className="flex items-start gap-2">
                 <MapPin className="w-5 h-5 mt-1 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold">{dog.location.city}, {dog.location.state}</p>
+                  <p className="font-semibold">{dog.owner?.address || 'Address not available'}</p>
                   <p className="text-muted-foreground text-sm">{formatDistance(distance)} away</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     📍 Location shown within 0.5km radius for privacy
@@ -503,26 +465,15 @@ const DogProfile = () => {
             <Card className="sticky top-24 p-6 shadow-xl border-2">
               <div className="space-y-6">
                 <div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Star className="w-4 h-4 fill-current" />
-                    <span className="font-semibold">{averageRating}</span>
-                    <span className="text-muted-foreground">·</span>
-                    <button className="underline text-muted-foreground">
-                      {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
-                    </button>
-                  </div>
+                  <p className="text-sm font-semibold">
+                    Compatibility Score: {compatibilityPercentage}%
+                  </p>
                 </div>
 
                 <Separator />
 
                 <div className="space-y-3">
-                  <Button 
-                    size="lg" 
-                    className="w-full bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(340_82%_52%)] hover:opacity-90 text-white font-semibold"
-                    onClick={handleConnect}
-                  >
-                    Request playdate
-                  </Button>
+                  
                   
                   <Button 
                     variant="outline" 
@@ -535,16 +486,10 @@ const DogProfile = () => {
                   </Button>
                 </div>
 
-                <p className="text-center text-sm text-muted-foreground">
-                  You won't be charged yet
-                </p>
+               
 
-                <Separator />
 
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <Shield className="w-4 h-4" />
-                  <span>Report this listing</span>
-                </div>
+                
               </div>
             </Card>
           </div>

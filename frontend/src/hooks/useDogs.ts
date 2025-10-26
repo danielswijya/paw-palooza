@@ -18,6 +18,101 @@ const mockLocations = [
   { city: 'Cambridge', state: 'MA', lat: 42.3700, lng: -71.1100 }, // Kendall Square
 ];
 
+// Helper function to geocode address using Google Maps API
+const geocodeAddress = async (address: string): Promise<{ lat: number; lng: number } | null> => {
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+  
+  if (!apiKey) {
+    console.warn('Google Maps API key not found');
+    return null;
+  }
+
+  try {
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`
+    );
+    
+    const data = await response.json();
+    
+    if (data.status === 'OK' && data.results && data.results.length > 0) {
+      const location = data.results[0].geometry.location;
+      return {
+        lat: location.lat,
+        lng: location.lng,
+      };
+    }
+    
+    console.warn('Geocoding failed:', data.status);
+    return null;
+  } catch (error) {
+    console.error('Error geocoding address:', error);
+    return null;
+  }
+};
+
+// Helper function to parse address string into location object
+const parseAddressToLocation = async (address: string, index: number) => {
+  let city = 'Unknown';
+  let state = 'MA';
+  
+  // First, try to geocode the address to get coordinates
+  const geocoded = await geocodeAddress(address);
+  
+  if (geocoded) {
+    // Use reverse geocoding to get detailed address components
+    const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    try {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${geocoded.lat},${geocoded.lng}&key=${apiKey}`
+      );
+      const data = await response.json();
+      if (data.status === 'OK' && data.results && data.results.length > 0) {
+        const components = data.results[0].address_components;
+        
+        // Extract city
+        const cityComponent = components.find((c: any) => c.types.includes('locality'));
+        if (cityComponent) {
+          city = cityComponent.long_name;
+        }
+        
+        // Extract state
+        const stateComponent = components.find((c: any) => c.types.includes('administrative_area_level_1'));
+        if (stateComponent) {
+          state = stateComponent.short_name;
+        }
+      }
+    } catch (e) {
+      console.error('Error reverse geocoding:', e);
+    }
+  }
+  
+  // Fallback: try to parse from the address string if geocoding failed
+  if (city === 'Unknown' || !geocoded) {
+    const parts = address.split(',').map(p => p.trim());
+    
+    if (parts.length >= 2) {
+      // Second-to-last part is usually the city
+      city = parts[parts.length - 2];
+      
+      // Last part contains state (and possibly ZIP)
+      const lastPart = parts[parts.length - 1];
+      const stateMatch = lastPart.match(/^([A-Z]{2})/);
+      if (stateMatch) {
+        state = stateMatch[1];
+      }
+    } else {
+      city = address;
+    }
+  }
+  
+  return {
+    city,
+    state,
+    lat: geocoded?.lat || mockLocations[index % mockLocations.length].lat,
+    lng: geocoded?.lng || mockLocations[index % mockLocations.length].lng,
+  };
+};
+
 export const useDogs = () => {
   return useQuery({
     queryKey: ['dogs'],
@@ -32,7 +127,8 @@ export const useDogs = () => {
             email,
             age,
             gender,
-            about
+            about,
+            address
           )
         `);
 
@@ -43,8 +139,9 @@ export const useDogs = () => {
       
       console.log('Fetched dogs from database:', data);
 
-      // Transform database data to DogProfile type
-      const dogs: DogProfile[] = (data || []).map((dog, index) => ({
+      // Transform database data to DogProfile type with geocoding
+      const dogs: DogProfile[] = await Promise.all(
+        (data || []).map(async (dog, index) => ({
         id: dog.id,
         name: dog.name || 'Unknown',
         images: dog.image_url && Array.isArray(dog.image_url) && dog.image_url.length > 0
@@ -52,7 +149,9 @@ export const useDogs = () => {
           : dog.image_url && typeof dog.image_url === 'string'
           ? [dog.image_url]
           : [mockImages[index % mockImages.length]], // Use uploaded images or cycle through mock images
-        location: mockLocations[index % mockLocations.length], // Cycle through mock locations
+        location: dog.owners?.address 
+          ? await parseAddressToLocation(dog.owners.address, index)
+          : mockLocations[index % mockLocations.length],
         bio: dog.about || '',
         traits: {
           breed: dog.breed || 'Mixed',
@@ -73,8 +172,10 @@ export const useDogs = () => {
           age: dog.owners.age,
           gender: dog.owners.gender,
           about: dog.owners.about,
+          address: dog.owners.address,
         } : undefined,
-      }));
+        }))
+      );
 
       return dogs;
     },
@@ -95,7 +196,8 @@ export const useDog = (id: string) => {
             email,
             age,
             gender,
-            about
+            about,
+            address
           )
         `)
         .eq('id', id)
@@ -119,7 +221,9 @@ export const useDog = (id: string) => {
           : data.image_url && typeof data.image_url === 'string'
           ? [data.image_url]
           : [mockImages[imageIndex]],
-        location: mockLocations[locationIndex],
+        location: data.owners?.address 
+          ? await parseAddressToLocation(data.owners.address, locationIndex)
+          : mockLocations[locationIndex],
         bio: data.about || '',
         traits: {
           breed: data.breed || 'Mixed',
@@ -140,6 +244,7 @@ export const useDog = (id: string) => {
           age: data.owners.age,
           gender: data.owners.gender,
           about: data.owners.about,
+          address: data.owners.address,
         } : undefined,
       };
 
