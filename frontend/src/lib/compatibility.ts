@@ -276,7 +276,7 @@ export async function calculateDogCompatibility(
     compatibilityScore,
     cosineSimilarity,
     sentimentScore: candidateSentiment,
-    isCompatible: compatibilityScore >= 0.85
+    isCompatible: compatibilityScore >= 0.75
   };
 }
 

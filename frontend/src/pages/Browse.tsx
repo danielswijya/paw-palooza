@@ -49,7 +49,7 @@ const Browse = () => {
       ),
     }));
 
-  // For You section - dogs with cosine similarity >= 0.85 threshold
+  // For You section - dogs with cosine similarity >= 0.75 threshold
   const forYouDogs = useMemo(() => {
     if (dogsWithDistance.length === 0 || !currentUserDog) return [];
     
@@ -58,7 +58,7 @@ const Browse = () => {
       dog.location.state === currentUserDog.location.state
     );
     
-    // Calculate cosine similarity for each dog and filter by 0.85 threshold
+    // Calculate cosine similarity for each dog and filter by 0.75 threshold
     const compatibleDogs = sameStateDogs
       .map(dog => {
         const cosineSimilarity = calculateCosineSimilarityOnly(currentUserDog, dog);
@@ -68,7 +68,7 @@ const Browse = () => {
           fullCompatibilityScore: cosineSimilarity // For now, use cosine similarity for sorting
         };
       })
-      .filter(dog => dog.compatibilityScore >= 0.85) // Only dogs meeting 0.85 cosine threshold
+      .filter(dog => dog.compatibilityScore >= 0.75) // Only dogs meeting 0.75 cosine threshold
       .sort((a, b) => b.fullCompatibilityScore - a.fullCompatibilityScore); // Sort by compatibility score
     
     return compatibleDogs;
