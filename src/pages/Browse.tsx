@@ -4,7 +4,7 @@ import { userLocation } from '@/data/mockDogs';
 import DogCard from '@/components/DogCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { User, Settings, Search, LogIn, ClipboardList, MessageSquare, Heart } from 'lucide-react';
+import { User, Settings, Search, LogIn, LogOut, ClipboardList, MessageSquare, Heart } from 'lucide-react';
 import { calculateDistance } from '@/lib/distance';
 import { DogProfile } from '@/types/dog';
 import {
@@ -17,11 +17,15 @@ import {
 import pawfectLogo from '@/assets/pawfect-logo.png';
 import { useDogs } from '@/hooks/useDogs';
 import { rankDogsByCompatibility, getCurrentUserDog, CompatibilityResult } from '@/lib/compatibility';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
 const Browse = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const { data: dogs = [], isLoading } = useDogs();
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
 
   // Get current user's dog for compatibility calculations
   const currentUserDog = getCurrentUserDog();
@@ -68,6 +72,22 @@ const Browse = () => {
     navigate(`/dog/${dog.id}`);
   };
 
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } else {
+      toast({
+        title: 'Signed out successfully',
+      });
+      navigate('/auth');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-muted/30">
       {/* Header */}
@@ -105,19 +125,28 @@ const Browse = () => {
                     Messages
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/auth')}>
-                    <LogIn className="w-4 h-4 mr-2" />
-                    Login / Sign Up
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/dashboard')}>
-                    <ClipboardList className="w-4 h-4 mr-2" />
-                    Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Settings className="w-4 h-4 mr-2" />
-                    Settings
-                  </DropdownMenuItem>
+                  {user ? (
+                    <>
+                      <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                        <ClipboardList className="w-4 h-4 mr-2" />
+                        Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Settings className="w-4 h-4 mr-2" />
+                        Settings
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleSignOut}>
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <DropdownMenuItem onClick={() => navigate('/auth')}>
+                      <LogIn className="w-4 h-4 mr-2" />
+                      Login / Sign Up
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </nav>
