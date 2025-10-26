@@ -51,7 +51,7 @@ const Browse = () => {
         const dog = dogsWithDistance.find(d => d.id === result.dogId);
         return dog ? { ...dog, compatibilityScore: result.compatibilityScore } : null;
       })
-      .filter(Boolean) as (DogProfile & { compatibilityScore: number })[];
+      .filter(Boolean) as (DogProfile & { compatibilityScore: number; distance: number })[];
     
     return topCompatibleDogs;
   }, [dogsWithDistance, currentUserDog]);
@@ -105,13 +105,13 @@ const Browse = () => {
                     Messages
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/login')}>
+                  <DropdownMenuItem onClick={() => navigate('/auth')}>
                     <LogIn className="w-4 h-4 mr-2" />
                     Login / Sign Up
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigate('/onboarding')}>
+                  <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                     <ClipboardList className="w-4 h-4 mr-2" />
-                    Add Your Dog
+                    Dashboard
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
