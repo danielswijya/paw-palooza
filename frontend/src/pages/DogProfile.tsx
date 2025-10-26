@@ -262,25 +262,19 @@ const DogProfile = () => {
               </div>
               
               <div className="flex items-center gap-2">
+                {compatibilityPercentage > 0 && (
+                  <>
+                    <span className="text-muted-foreground">{compatibilityPercentage}% Compatible</span>
+                    <span className="text-muted-foreground">·</span>
+                  </>
+                )}
                 <Star className="w-4 h-4 fill-current" />
                 <span className="font-semibold">{averageRating}</span>
-                <span className="text-muted-foreground">·</span>
-                <button className="underline font-semibold">
-                  {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
-                </button>
-                <span className="text-muted-foreground">·</span>
+                <span className="text-muted-foreground">·</span>            
                 <span className="text-muted-foreground">{formatDistance(distance)}</span>
               </div>
             </div>
-
-            <Separator />
-
-            {/* Owned by Section */}
-            <div>
-              <h3 className="text-lg font-semibold">
-                Owned by {dog.owner?.name || 'Owner'}
-              </h3>
-            </div>
+          
 
             <Separator />
 
@@ -464,11 +458,32 @@ const DogProfile = () => {
           <div className="lg:col-span-1">
             <Card className="sticky top-24 p-6 shadow-xl border-2">
               <div className="space-y-6">
-                <div>
-                  <p className="text-sm font-semibold">
-                    Compatibility Score: {compatibilityPercentage}%
-                  </p>
-                </div>
+                {dog.owner && (
+                  <>
+                    <div>
+                      <h3 className="text-xl font-semibold mb-1">
+                        {dog.owner.name}
+                      </h3>
+                      {dog.owner.age && (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <span>{dog.owner.age} years old</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {dog.owner.about && (
+                      <>
+                        <Separator />
+                        <div className="space-y-4">
+                          <h3 className="text-xl font-semibold">About the {dog.owner.gender?.toLowerCase() === 'female' ? 'Mom' : 'Dad'}</h3>
+                          <p className="text-foreground leading-relaxed whitespace-pre-line">
+                            {dog.owner.about}
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
 
                 <Separator />
 
