@@ -37,6 +37,7 @@ export type Database = {
           city: string | null
           created_at: string | null
           id: string
+          image_url: string | null
           lat: number | null
           lng: number | null
           name: string | null
@@ -55,6 +56,7 @@ export type Database = {
           city?: string | null
           created_at?: string | null
           id?: string
+          image_url?: string | null
           lat?: number | null
           lng?: number | null
           name?: string | null
@@ -73,6 +75,7 @@ export type Database = {
           city?: string | null
           created_at?: string | null
           id?: string
+          image_url?: string | null
           lat?: number | null
           lng?: number | null
           name?: string | null
@@ -97,44 +100,35 @@ export type Database = {
       owners: {
         Row: {
           about: string | null
+          address: string | null
           age: number | null
-          city: string | null
           created_at: string | null
           email: string | null
           gender: string | null
           id: string
-          lat: number | null
-          lng: number | null
           name: string | null
-          state: string | null
           user_id: string | null
         }
         Insert: {
           about?: string | null
+          address?: string | null
           age?: number | null
-          city?: string | null
           created_at?: string | null
           email?: string | null
           gender?: string | null
           id?: string
-          lat?: number | null
-          lng?: number | null
           name?: string | null
-          state?: string | null
           user_id?: string | null
         }
         Update: {
           about?: string | null
+          address?: string | null
           age?: number | null
-          city?: string | null
           created_at?: string | null
           email?: string | null
           gender?: string | null
           id?: string
-          lat?: number | null
-          lng?: number | null
           name?: string | null
-          state?: string | null
           user_id?: string | null
         }
         Relationships: []

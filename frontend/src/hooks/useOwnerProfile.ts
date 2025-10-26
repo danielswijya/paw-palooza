@@ -10,10 +10,7 @@ export interface OwnerProfile {
   age?: number;
   gender?: string;
   about?: string;
-  city?: string;
-  state?: string;
-  lat?: number;
-  lng?: number;
+  address?: string;
 }
 
 export const useOwnerProfile = () => {
@@ -51,19 +48,41 @@ export const useOwnerProfile = () => {
   };
 
   const updateProfile = async (updates: Partial<OwnerProfile>) => {
-    if (!user || !profile) return { error: new Error('No user or profile') };
+    if (!user) return { error: new Error('No user') };
 
     try {
-      const { error } = await supabase
-        .from('owners')
-        .update(updates)
-        .eq('id', profile.id);
+      if (profile) {
+        // Update existing profile
+        console.log('Updating existing profile with ID:', profile.id);
+        const { error } = await supabase
+          .from('owners')
+          .update(updates)
+          .eq('id', profile.id);
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        // Create new profile
+        const ownerData = {
+          user_id: user.id,
+          email: user.email || '',
+          ...updates,
+        };
+        console.log('Creating new owner profile:', ownerData);
+        
+        const { error } = await supabase
+          .from('owners')
+          .insert(ownerData);
+
+        if (error) {
+          console.error('Error creating owner:', error);
+          throw error;
+        }
+      }
       
       await fetchProfile();
       return { error: null };
     } catch (error) {
+      console.error('Update profile error:', error);
       return { error };
     }
   };

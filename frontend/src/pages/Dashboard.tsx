@@ -30,7 +30,7 @@ const Dashboard = () => {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (!profileLoading && profile && (!profile.city || !profile.state)) {
+    if (!profileLoading && profile && !profile.address) {
       navigate('/owner-onboarding');
     }
   }, [profile, profileLoading, navigate]);
@@ -131,7 +131,7 @@ const Dashboard = () => {
             <div>
               <p className="text-sm text-muted-foreground">Location</p>
               <p className="text-lg font-semibold">
-                {profile?.city}, {profile?.state}
+                {profile?.address || 'Not set'}
               </p>
             </div>
           </div>

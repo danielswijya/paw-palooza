@@ -105,7 +105,7 @@ const Browse = () => {
                     Messages
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => navigate('/login')}>
+                  <DropdownMenuItem onClick={() => navigate('/auth')}>
                     <LogIn className="w-4 h-4 mr-2" />
                     Login / Sign Up
                   </DropdownMenuItem>
