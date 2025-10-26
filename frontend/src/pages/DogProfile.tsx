@@ -100,6 +100,9 @@ const DogProfile = () => {
   // Calculate distance (mock for now)
   const distance = Math.random() * 10;
 
+  const displayAddress = dog.owner?.address || (dog.location ? `${dog.location.city}, ${dog.location.state}` : '');
+
+
   const handleConnect = () => {
     toast.success(`Sent a playdate request to ${dog.name}!`, {
       description: "They'll be notified and can respond soon",
@@ -449,23 +452,29 @@ const DogProfile = () => {
               <div className="flex items-start gap-2">
                 <MapPin className="w-5 h-5 mt-1 flex-shrink-0" />
                 <div>
-                  <p className="font-semibold">{dog.owner?.address || 'Address not available'}</p>
+                  <p className="font-semibold">{displayAddress || 'Address not available'}</p>
                   <p className="text-muted-foreground text-sm">{formatDistance(distance)} away</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     📍 Location shown within 0.5km radius for privacy
                   </p>
                 </div>
               </div>
+
+              {/* Google Map Component */}
               <GoogleMap 
-                lat={dog.location.lat} 
-                lng={dog.location.lng} 
+                lat={dog.location.lat}
+                lng={dog.location.lng}
                 dogName={dog.name}
                 className="w-full h-[400px] rounded-xl"
                 radiusMeters={500}
                 maxZoom={15}
                 zoom={13}
+                showNearbyCafes
+                resultsLimit={7}
+                searchRadiusMeters={2500}
               />
             </div>
+
           </div>
 
           {/* Sidebar - Booking Card */}
