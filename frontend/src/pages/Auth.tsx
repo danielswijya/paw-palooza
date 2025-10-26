@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
@@ -42,7 +41,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
-      <div className="w-full max-w-6xl grid md:grid-cols-2 gap-8 items-center">
+      <div className="w-full max-w-6xl grid md:grid-cols-2 gap-16 items-center">
         {/* Hero Section */}
         <div className="space-y-6 text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-3 mb-8">
@@ -67,15 +66,16 @@ const Auth = () => {
           </div>
         </div>
 
-        {/* Login Card */}
-        <Card className="shadow-xl border-2">
-          <CardHeader className="space-y-4">
-            <CardTitle className="text-3xl text-center">Welcome!</CardTitle>
-            <CardDescription className="text-center text-base">
+        {/* Login Section */}
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <h2 className="text-3xl text-center">Welcome!</h2>
+            <p className="text-center text-base text-muted-foreground">
               Sign in to start connecting with dog lovers in your area
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
+            </p>
+          </div>
+          
+          <div className="space-y-6">
             <Button 
               variant="hero" 
               size="xl" 
@@ -106,8 +106,8 @@ const Auth = () => {
             <p className="text-center text-sm text-muted-foreground">
               By continuing, you agree to our Terms of Service and Privacy Policy
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
