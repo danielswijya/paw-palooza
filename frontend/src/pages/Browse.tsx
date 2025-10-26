@@ -4,7 +4,7 @@ import { userLocation } from '@/data/mockDogs';
 import DogCard from '@/components/DogCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { User, Search, LogIn, ClipboardList, MessageSquare, Heart, LayoutDashboard } from 'lucide-react';
+import { User, Search, LogIn, ClipboardList, Heart, LayoutDashboard } from 'lucide-react';
 import { calculateDistance } from '@/lib/distance';
 import { DogProfile } from '@/types/dog';
 import {
@@ -118,10 +118,6 @@ const Browse = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem onClick={() => navigate('/messages')}>
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    Messages
-                  </DropdownMenuItem>
                   {user ? (
                     <>
                       <DropdownMenuSeparator />

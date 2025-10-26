@@ -110,7 +110,36 @@ const DogProfile = () => {
   };
 
   const handleMessage = () => {
-    navigate('/messages', { state: { dogId: dog.id, dogName: dog.name } });
+    console.log('Dog owner data:', dog?.owner);
+    
+    if (!dog?.owner?.email) {
+      toast.error('Owner email not available');
+      console.error('Owner email missing:', dog?.owner);
+      return;
+    }
+
+    // Create email subject and body
+    const subject = `Playdate Request for ${dog.name}`;
+    const body = `Hi there!
+
+I'm interested in setting up a playdate for our dogs. I saw ${dog.name}'s profile on Paw Palooza and thought they might be a great match for my dog!
+
+Would you be interested in arranging a meetup?
+
+Best regards`;
+
+    // Create mailto link
+    const mailtoLink = `mailto:${dog.owner.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    console.log('Opening email to:', dog.owner.email);
+    console.log('Mailto link:', mailtoLink);
+    
+    // Open email client
+    window.open(mailtoLink);
+    
+    toast.success('Email client opened!', {
+      description: `Ready to send email to ${dog.owner.name} (${dog.owner.email})`,
+    });
   };
 
   const handleShare = () => {
