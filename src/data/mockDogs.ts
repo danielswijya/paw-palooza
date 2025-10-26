@@ -3,7 +3,7 @@ import dog1 from '@/assets/dog-1.jpg';
 import dog2 from '@/assets/dog-2.jpg';
 import dog3 from '@/assets/dog-3.jpg';
 
-// User's current location (Boston, MA)
+// User's current location (Boston, MA - Downtown area)
 export const userLocation = {
   city: 'Boston',
   state: 'MA',
@@ -39,18 +39,17 @@ export const mockDogs: DogProfile[] = [
   {
     id: '2',
     name: 'Luna',
-    images: [dog2],
-    location: {
-      city: 'Boston',
+    images: [dog2],    location: {
+      city: 'Somerville',
       state: 'MA',
-      lat: 42.3505,
-      lng: -71.0756,
+      lat: 42.3876,
+      lng: -71.0995,
     },
     bio: 'Energetic and playful Lab who enjoys long walks and swimming. Looking for active playmates!',
     traits: {
       breed: 'Labrador Retriever',
       age: 2,
-      weight: 65,
+      weight: 55,
       sex: 'female',
       neutered: true,
       vaccinated: true,
@@ -61,14 +60,13 @@ export const mockDogs: DogProfile[] = [
     ownerId: 'owner2',
   },
   {
-    id: '3',
-    name: 'Cooper',
+    id: '3',    name: 'Max',
     images: [dog3],
     location: {
-      city: 'Somerville',
+      city: 'Newton',
       state: 'MA',
-      lat: 42.3876,
-      lng: -71.0995,
+      lat: 42.3370,
+      lng: -71.2092,
     },
     bio: 'Sweet and gentle Corgi with a big personality! Loves treats and cuddling after playtime.',
     traits: {

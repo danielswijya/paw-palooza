@@ -30,17 +30,20 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
   const mapRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   useEffect(() => {
     const initMap = () => {
       const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || import.meta.env.GOOGLE_MAPS_API_KEY;
       
-      console.log('Google Maps API Key:', apiKey);
+      console.log('Google Maps API Key found:', !!apiKey);
       console.log('API Key length:', apiKey?.length);
       console.log('API Key starts with AIzaSy:', apiKey?.startsWith('AIzaSy'));
+      console.log('Environment variables:', {
+        VITE_GOOGLE_MAPS_API_KEY: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+        GOOGLE_MAPS_API_KEY: import.meta.env.GOOGLE_MAPS_API_KEY
+      });
       
-      if (!apiKey || apiKey === 'YOUR_API_KEY_HERE' || apiKey.includes('kaggle.com')) {
-        setError('Google Maps API key not configured. Showing location info instead.');
+      if (!apiKey || apiKey === 'YOUR_API_KEY_HERE' || apiKey.includes('kaggle.com') || apiKey.length < 30) {
+        setError('Google Maps API key not configured properly. Showing location info instead.');
         return;
       }
 
@@ -107,14 +110,12 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
             radius: radiusMeters // Privacy radius in meters
           });
 
-          // No exact location marker - only the privacy circle
-
-          // Add info window explaining privacy
+          // No exact location marker - only the privacy circle          // Add info window explaining privacy
           const infoWindow = new window.google.maps.InfoWindow({
             content: `
               <div style="padding: 8px; text-align: center;">
                 <strong>${dogName} is in this area</strong><br>
-                <small style="color: #666;">Location shown within ${Math.round(radiusMeters/1000)}km radius for privacy</small>
+                <small style="color: #666;">Approximate location shown within ${Math.round(radiusMeters/1000*10)/10}km radius for privacy</small>
               </div>
             `
           });
@@ -139,13 +140,12 @@ const GoogleMap: React.FC<GoogleMapProps> = ({
     return (
       <div className={`${className} bg-muted rounded-xl flex items-center justify-center`}>
         <div className="text-center">
-          <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground mb-2">{error}</p>
+          <MapPin className="w-12 h-12 text-muted-foreground mx-auto mb-4" />          <p className="text-muted-foreground mb-2">{error}</p>
           <p className="text-sm text-muted-foreground">
-            📍 Cambridge, MA (42.3736, -71.1097)
+            📍 Approximate location: Cambridge, MA area
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            Add your Google Maps API key to see the interactive map
+            Add your Google Maps API key to see the precise location on an interactive map
           </p>
         </div>
       </div>

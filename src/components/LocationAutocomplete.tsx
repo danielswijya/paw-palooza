@@ -14,6 +14,10 @@ interface LocationAutocompleteProps {
     state: string;
     lat: number;
     lng: number;
+    fullAddress?: string;
+    streetNumber?: string;
+    route?: string;
+    postalCode?: string;
   }) => void;
   initialValue?: string;
   label?: string;
@@ -24,20 +28,22 @@ interface LocationAutocompleteProps {
 const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
   onLocationSelect,
   initialValue = '',
-  label = 'Location',
-  placeholder = 'Enter your city',
+  label = 'Address',
+  placeholder = 'Enter your address',
   required = false,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputValue, setInputValue] = useState(initialValue);
   const [isLoaded, setIsLoaded] = useState(false);
-
   useEffect(() => {
     const initAutocomplete = () => {
       const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
-      if (!apiKey || apiKey === 'YOUR_API_KEY_HERE') {
-        console.warn('Google Maps API key not configured');
+      console.log('LocationAutocomplete - API Key found:', !!apiKey);
+      console.log('LocationAutocomplete - API Key length:', apiKey?.length);
+
+      if (!apiKey || apiKey === 'YOUR_API_KEY_HERE' || apiKey.length < 30) {
+        console.warn('Google Maps API key not configured properly for LocationAutocomplete');
         return;
       }
 
@@ -61,14 +67,13 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
       };
 
       document.head.appendChild(script);
-    };
-
-    const setupAutocomplete = () => {
+    };    const setupAutocomplete = () => {
       if (!inputRef.current || !window.google) return;
 
       const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
-        types: ['(cities)'],
+        types: ['address'], // Changed from ['(cities)'] to ['address'] for full addresses
         componentRestrictions: { country: 'us' },
+        fields: ['address_components', 'formatted_address', 'geometry', 'name']
       });
 
       autocomplete.addListener('place_changed', () => {
@@ -77,11 +82,12 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
         if (!place.geometry || !place.geometry.location) {
           console.warn('No location data for this place');
           return;
-        }
-
-        // Extract city and state from address components
+        }        // Extract city and state from address components
         let city = '';
         let state = '';
+        let streetNumber = '';
+        let route = '';
+        let postalCode = '';
 
         place.address_components?.forEach((component: any) => {
           if (component.types.includes('locality')) {
@@ -90,18 +96,50 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
           if (component.types.includes('administrative_area_level_1')) {
             state = component.short_name;
           }
+          if (component.types.includes('street_number')) {
+            streetNumber = component.long_name;
+          }
+          if (component.types.includes('route')) {
+            route = component.long_name;
+          }
+          if (component.types.includes('postal_code')) {
+            postalCode = component.long_name;
+          }
         });
+
+        // If we don't have a city, try to extract it from sublocality or neighborhood
+        if (!city) {
+          place.address_components?.forEach((component: any) => {
+            if (component.types.includes('sublocality_level_1') || 
+                component.types.includes('neighborhood')) {
+              city = component.long_name;
+            }
+          });
+        }
 
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
 
         setInputValue(place.formatted_address || '');
 
-        onLocationSelect({
+        console.log('Address selected:', {
+          formatted_address: place.formatted_address,
+          city,
+          state,
+          streetNumber,
+          route,
+          postalCode,
+          lat,
+          lng
+        });        onLocationSelect({
           city,
           state,
           lat,
           lng,
+          fullAddress: place.formatted_address,
+          streetNumber,
+          route,
+          postalCode,
         });
       });
 

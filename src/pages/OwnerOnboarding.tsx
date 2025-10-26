@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useOwnerProfile } from '@/hooks/useOwnerProfile';
 import { useToast } from '@/hooks/use-toast';
 import LocationAutocomplete from '@/components/LocationAutocomplete';
+import { MA_LOCATIONS, getLocationCoords } from '@/lib/locations';
 import pawfectLogo from '@/assets/pawfect-logo.png';
 
 const OwnerOnboarding = () => {
@@ -22,7 +23,6 @@ const OwnerOnboarding = () => {
   const [step, setStep] = useState(1);
   const totalSteps = 2;
   const stepLabels = ['Basic Info', 'Location'];
-
   const [formData, setFormData] = useState({
     name: '',
     age: '',
@@ -30,6 +30,7 @@ const OwnerOnboarding = () => {
     about: '',
     city: '',
     state: '',
+    fullAddress: '',
     lat: undefined as number | undefined,
     lng: undefined as number | undefined,
   });
@@ -45,7 +46,6 @@ const OwnerOnboarding = () => {
       navigate('/dashboard');
     }
   }, [profile, navigate]);
-
   useEffect(() => {
     if (profile) {
       setFormData({
@@ -55,6 +55,7 @@ const OwnerOnboarding = () => {
         about: profile.about || '',
         city: profile.city || '',
         state: profile.state || '',
+        fullAddress: '', // Profile doesn't store full address, only city/state
         lat: profile.lat,
         lng: profile.lng,
       });
@@ -182,29 +183,56 @@ const OwnerOnboarding = () => {
                   />
                 </div>
               </div>
-            )}
-
-            {step === 2 && (
-              <div className="space-y-4">
+            )}            {step === 2 && (              <div className="space-y-4">
                 <LocationAutocomplete
-                  label="Location"
-                  placeholder="Start typing your city..."
+                  label="Address"
+                  placeholder="Enter your full address (e.g., 123 Main St, Boston, MA)"
                   required
-                  initialValue={formData.city && formData.state ? `${formData.city}, ${formData.state}` : ''}
+                  initialValue={formData.fullAddress || (formData.city && formData.state ? `${formData.city}, ${formData.state}` : '')}
                   onLocationSelect={(location) => {
                     setFormData({
                       ...formData,
                       city: location.city,
                       state: location.state,
+                      fullAddress: location.fullAddress || '',
                       lat: location.lat,
                       lng: location.lng,
                     });
                   }}
                 />
 
-                <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                {/* Fallback city selector */}
+                <div className="space-y-2">
+                  <Label htmlFor="city-fallback">Or select from popular MA cities</Label>
+                  <Select
+                    value={formData.city}
+                    onValueChange={(city) => {
+                      const coords = getLocationCoords(city, 'MA');
+                      if (coords) {
+                        setFormData({
+                          ...formData,
+                          city,
+                          state: 'MA',
+                          lat: coords.lat,
+                          lng: coords.lng,
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a city" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.keys(MA_LOCATIONS).map((city) => (
+                        <SelectItem key={city} value={city}>
+                          {city}, MA
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>                <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
                   <p className="text-sm text-foreground">
-                    📍 Your location helps us show you dogs in your area
+                    📍 Your address helps us show you dogs in your area. We only show your general location to others for privacy.
                   </p>
                 </div>
               </div>

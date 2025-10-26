@@ -11,6 +11,7 @@ import Browse from "./pages/Browse";
 import DogProfile from "./pages/DogProfile";
 import Messages from "./pages/Messages";
 import AddDog from "./pages/AddDog";
+import LocationTest from "./components/LocationTest";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,9 +28,9 @@ const App = () => (
           <Route path="/owner-onboarding" element={<OwnerOnboarding />} />
           <Route path="/dog-onboarding" element={<DogOnboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dog/:id" element={<DogProfile />} />
-          <Route path="/messages" element={<Messages />} />
+          <Route path="/dog/:id" element={<DogProfile />} />          <Route path="/messages" element={<Messages />} />
           <Route path="/add-dog" element={<AddDog />} />
+          <Route path="/location-test" element={<LocationTest />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
