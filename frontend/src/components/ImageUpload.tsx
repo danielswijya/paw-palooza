@@ -38,7 +38,10 @@ const ImageUpload = ({ images, onImagesChange, maxImages = 5 }: ImageUploadProps
           .from('images')
           .upload(filePath, file);
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error('Upload error details:', uploadError);
+          throw new Error(uploadError.message || 'Upload failed');
+        }
 
         // Get the public URL
         const { data } = supabase.storage.from('images').getPublicUrl(filePath);
@@ -48,9 +51,10 @@ const ImageUpload = ({ images, onImagesChange, maxImages = 5 }: ImageUploadProps
       const newUrls = await Promise.all(uploadPromises);
       onImagesChange([...images, ...newUrls]);
       toast.success('Images uploaded successfully!');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading images:', error);
-      toast.error('Failed to upload images');
+      const errorMessage = error?.message || 'Failed to upload images. Please check your Supabase storage policies.';
+      toast.error(errorMessage);
     } finally {
       setUploading(false);
       // Reset the input

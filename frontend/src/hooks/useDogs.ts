@@ -36,7 +36,12 @@ export const useDogs = () => {
           )
         `);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching dogs:', error);
+        throw error;
+      }
+      
+      console.log('Fetched dogs from database:', data);
 
       // Transform database data to DogProfile type
       const dogs: DogProfile[] = (data || []).map((dog, index) => ({
