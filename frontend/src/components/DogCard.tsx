@@ -133,12 +133,6 @@ const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) =
           </Badge>
         </div>
 
-        {/* Compatibility Score Debug Info */}
-        {compatibilityScore && (
-          <div className="text-xs text-muted-foreground pt-1 border-t border-muted">
-            <span className="font-mono">Score: {compatibilityScore.toFixed(4)}</span>
-          </div>
-        )}
       </div>
     </Card>
     </SpotlightCard>
