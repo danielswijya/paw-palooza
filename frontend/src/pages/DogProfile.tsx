@@ -50,6 +50,7 @@ const DogProfile = () => {
   const [reviewDescription, setReviewDescription] = useState('');
   const [reviews, setReviews] = useState<any[]>([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [compatibility, setCompatibility] = useState<any>(null);
 
   // Fetch reviews when component mounts or dog changes
   useEffect(() => {
@@ -73,6 +74,20 @@ const DogProfile = () => {
 
     fetchReviews();
   }, [dog?.id]);
+
+  // Calculate compatibility score with the user's first dog (if they have one)
+  const userDogs = allDogs?.filter(d => d.ownerId === profile?.id) || [];
+  const userDog = userDogs[0]; // Use the first dog for compatibility
+
+  useEffect(() => {
+    const calculateCompatibility = async () => {
+      if (userDog) {
+        const result = await calculateDogCompatibility(dog, userDog);
+        setCompatibility(result);
+      }
+    };
+    calculateCompatibility();
+  }, [userDog, dog]);
   
   if (isLoading) {
     return (
@@ -203,20 +218,6 @@ Best regards`;
     : '0.00';
   const totalReviews = reviews.length;
 
-  // Calculate compatibility score with the user's first dog (if they have one)
-  const userDogs = allDogs?.filter(d => d.ownerId === profile?.id) || [];
-  const userDog = userDogs[0]; // Use the first dog for compatibility
-  const [compatibility, setCompatibility] = useState<any>(null);
-
-  useEffect(() => {
-    const calculateCompatibility = async () => {
-      if (userDog) {
-        const result = await calculateDogCompatibility(dog, userDog);
-        setCompatibility(result);
-      }
-    };
-    calculateCompatibility();
-  }, [userDog, dog]);
 
   const compatibilityPercentage = compatibility ? Math.round(compatibility.cosineSimilarity * 100) : 0;
 
