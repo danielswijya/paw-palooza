@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { DogProfile } from '@/types/dog';
 import { MapPin, Heart } from 'lucide-react';
 import { Card } from '@/components/ui/card';
@@ -13,6 +14,35 @@ interface DogCardProps {
 }
 
 const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) => {
+  const [avgRating, setAvgRating] = useState<number | null>(null);
+  const [hasReviews, setHasReviews] = useState(false);
+
+  // Fetch reviews and calculate average rating
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/api/reviews?dog_id=${dog.id}`);
+        if (!response.ok) throw new Error('Failed to fetch reviews');
+        
+        const reviews = await response.json();
+        
+        if (reviews && reviews.length > 0) {
+          const totalRating = reviews.reduce((sum: number, review: any) => sum + (review.rating || 0), 0);
+          const average = totalRating / reviews.length;
+          setAvgRating(average);
+          setHasReviews(true);
+        } else {
+          setHasReviews(false);
+        }
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+        setHasReviews(false);
+      }
+    };
+
+    fetchReviews();
+  }, [dog.id]);
+
   // Use compatibility score if provided, otherwise generate random match percentage
   const matchPercentage = compatibilityScore 
     ? Math.round(compatibilityScore * 100) 
@@ -55,13 +85,17 @@ const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) =
       </div>
 
       {/* Content */}
-      <div className="p-3 space-y-2 flex-1 flex flex-col">
-        {/* Name, Age, and Location */}
-        <div className="mb-2">
-          <h3 className="text-base font-bold mb-1 line-clamp-1">
-            {dog.name}, {dog.traits.age}
+      <div className="p-3 flex-1 flex flex-col space-y-2">
+        {/* Name and Breed */}
+        <div>
+          <h3 className="text-base font-bold line-clamp-1">
+            {dog.name}, {dog.traits.breed}
           </h3>
-          <div className="flex items-center text-muted-foreground text-xs mb-2">
+        </div>
+
+        {/* Location and Compatibility on same row */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center text-muted-foreground text-xs">
             <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
             <span className="line-clamp-1">
               {dog.location.city}, {dog.location.state}
@@ -77,34 +111,26 @@ const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) =
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1.5 mt-auto">
-          <Badge variant="outline" className="text-xs">
-            {dog.traits.breed}
-          </Badge>
+          {hasReviews && avgRating && (
+            <Badge variant="outline" className="text-xs">
+              {avgRating.toFixed(1)} ⭐
+            </Badge>
+          )}
           <Badge variant="outline" className="text-xs">
             {dog.traits.weight} lbs
           </Badge>
           <Badge variant="outline" className="text-xs">
-            {dog.traits.sex}
+            {dog.traits.sex.charAt(0).toUpperCase() + dog.traits.sex.slice(1)}
           </Badge>
           <Badge variant="outline" className="text-xs">
             Neutered {dog.traits.neutered ? '✓' : '✗'}
           </Badge>
-        </div>
-
-        {/* Ratings Preview */}
-        <div className="flex gap-2 text-xs mt-2">
-          <div className="flex items-center gap-0.5">
-            <span className="text-muted-foreground text-xs">🐕</span>
-            <span className="font-medium">{dog.traits.dogSociability}/5</span>
-          </div>
-          <div className="flex items-center gap-0.5">
-            <span className="text-muted-foreground text-xs">👤</span>
-            <span className="font-medium">{dog.traits.humanSociability}/5</span>
-          </div>
-          <div className="flex items-center gap-0.5">
-            <span className="text-muted-foreground text-xs">⭐</span>
-            <span className="font-medium">{dog.traits.temperament}/5</span>
-          </div>
+          <Badge variant="outline" className="text-xs">
+            Sociability {dog.traits.dogSociability > 3 ? '✓' : dog.traits.dogSociability === 3 ? '-' : '✗'}
+          </Badge>
+          <Badge variant="outline" className="text-xs">
+            Temperament {dog.traits.temperament > 3 ? '✓' : dog.traits.temperament === 3 ? '-' : '✗'}
+          </Badge>
         </div>
 
         {/* Compatibility Score Debug Info */}

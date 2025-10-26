@@ -26,7 +26,9 @@ import {
   Calendar,
   CheckCircle2,
   MessageSquare,
-  ChevronRight
+  ChevronRight,
+  Check,
+  X
 } from 'lucide-react';
 import { formatDistance } from '@/lib/distance';
 import { toast } from 'sonner';
@@ -257,7 +259,7 @@ const DogProfile = () => {
                   <span>·</span>
                   <span>{dog.traits.weight} lbs</span>
                   <span>·</span>
-                  <span>{dog.traits.sex}</span>
+                  <span>{dog.traits.sex?.charAt(0).toUpperCase() + dog.traits.sex?.slice(1).toLowerCase()}</span>
                 </div>
               </div>
               
@@ -295,11 +297,23 @@ const DogProfile = () => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between max-w-md">
                   <span>Neutered/Spayed</span>
-                  <span className="font-semibold">{dog.traits.neutered ? 'Yes' : 'No'}</span>
+                  <div className="flex items-center">
+                    {dog.traits.neutered ? (
+                      <Check className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <X className="w-5 h-5 text-red-600" />
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center justify-between max-w-md">
                   <span>Vaccinated</span>
-                  <span className="font-semibold">{dog.traits.vaccinated ? 'Yes' : 'No'}</span>
+                  <div className="flex items-center">
+                    {dog.traits.vaccinated ? (
+                      <Check className="w-5 h-5 text-green-600" />
+                    ) : (
+                      <X className="w-5 h-5 text-red-600" />
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center justify-between max-w-md">
                   <span>Sociability</span>
@@ -516,7 +530,7 @@ const DogProfile = () => {
         <div className="max-w-[1600px] mx-auto px-6 lg:px-20 py-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <img src={pawfectLogo} alt="Pawfect" className="h-6 w-auto" />
+              <img src={pawfectLogo} alt="Pawfect" className="h-20 w-auto" />
               <span className="text-sm text-muted-foreground">
                 © 2024 Pawfect, Inc.
               </span>

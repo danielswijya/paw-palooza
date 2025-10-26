@@ -4,7 +4,7 @@ import { userLocation } from '@/data/mockDogs';
 import DogCard from '@/components/DogCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { User, Settings, Search, LogIn, ClipboardList, MessageSquare, Heart, LayoutDashboard } from 'lucide-react';
+import { User, Search, LogIn, ClipboardList, MessageSquare, Heart, LayoutDashboard } from 'lucide-react';
 import { calculateDistance } from '@/lib/distance';
 import { DogProfile } from '@/types/dog';
 import {
@@ -17,6 +17,7 @@ import {
 import pawfectLogo from '@/assets/pawfect-logo.png';
 import { useDogs } from '@/hooks/useDogs';
 import { useAuth } from '@/hooks/useAuth';
+import { useOwnerProfile } from '@/hooks/useOwnerProfile';
 import { rankDogsByCompatibility, getCurrentUserDog, CompatibilityResult } from '@/lib/compatibility';
 
 const Browse = () => {
@@ -24,20 +25,23 @@ const Browse = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const { data: dogs = [], isLoading } = useDogs();
   const { user } = useAuth();
+  const { profile } = useOwnerProfile();
 
   // Get current user's dog for compatibility calculations
   const currentUserDog = getCurrentUserDog();
 
-  // Calculate distances and sort by proximity
-  const dogsWithDistance = dogs.map(dog => ({
-    ...dog,
-    distance: calculateDistance(
-      userLocation.lat,
-      userLocation.lng,
-      dog.location.lat,
-      dog.location.lng
-    ),
-  }));
+  // Filter out user's own dogs and calculate distances
+  const dogsWithDistance = dogs
+    .filter(dog => dog.ownerId !== profile?.id) // Exclude user's own dogs
+    .map(dog => ({
+      ...dog,
+      distance: calculateDistance(
+        userLocation.lat,
+        userLocation.lng,
+        dog.location.lat,
+        dog.location.lng
+      ),
+    }));
 
   // For You section - dogs ranked by compatibility score
   const forYouDogs = useMemo(() => {
@@ -93,7 +97,7 @@ const Browse = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <img src={pawfectLogo} alt="Pawfect" className="h-8 w-auto" />
+              <img src={pawfectLogo} alt="Pawfect" className="h-20 w-auto" />
             </div>
 
             {/* Search Bar */}
@@ -147,11 +151,6 @@ const Browse = () => {
                       </DropdownMenuItem>
                     </>
                   )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Settings className="w-4 h-4 mr-2" />
-                    Settings
-                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </nav>

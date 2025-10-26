@@ -46,7 +46,7 @@ const Auth = () => {
         {/* Hero Section */}
         <div className="space-y-6 text-center md:text-left">
           <div className="flex items-center justify-center md:justify-start gap-3 mb-8">
-            <img src={pawfectLogo} alt="Pawfect" className="h-12 w-auto" />
+            <img src={pawfectLogo} alt="Pawfect" className="h-20 w-auto" />
           </div>
           
           <div className="space-y-4">

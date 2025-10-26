@@ -116,7 +116,7 @@ const Messages = () => {
             <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <img src={pawfectLogo} alt="Pawfect Messages" className="h-8 w-auto" />
+            <img src={pawfectLogo} alt="Pawfect Messages" className="h-20 w-auto" />
           </div>
         </div>
       </header>

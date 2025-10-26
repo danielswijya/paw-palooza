@@ -1,27 +1,24 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
 import { useOwnerProfile } from '@/hooks/useOwnerProfile';
-import { supabase } from '@/integrations/supabase/client';
+import { useDogs } from '@/hooks/useDogs';
 import { PlusCircle, Dog, LogOut } from 'lucide-react';
 import pawfectLogo from '@/assets/pawfect-logo.png';
+import DogCard from '@/components/DogCard';
+import { DogProfile } from '@/types/dog';
 
-interface DogProfile {
-  id: string;
-  name: string;
-  breed: string;
-  age: number;
-  about: string;
-}
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
   const { profile, loading: profileLoading } = useOwnerProfile();
-  const [dogs, setDogs] = useState<DogProfile[]>([]);
-  const [loadingDogs, setLoadingDogs] = useState(true);
+  const { data: allDogs, isLoading: loadingDogs } = useDogs();
+
+  // Filter dogs for the current user
+  const dogs = allDogs?.filter(dog => dog.ownerId === profile?.id) || [];
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -34,30 +31,6 @@ const Dashboard = () => {
       navigate('/owner-onboarding');
     }
   }, [profile, profileLoading, navigate]);
-
-  useEffect(() => {
-    if (profile) {
-      fetchDogs();
-    }
-  }, [profile]);
-
-  const fetchDogs = async () => {
-    if (!profile) return;
-
-    try {
-      const { data, error } = await supabase
-        .from('dogs')
-        .select('*')
-        .eq('owner_id', profile.id);
-
-      if (error) throw error;
-      setDogs(data || []);
-    } catch (error) {
-      console.error('Error fetching dogs:', error);
-    } finally {
-      setLoadingDogs(false);
-    }
-  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -82,7 +55,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-6 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <img src={pawfectLogo} alt="Pawfect" className="h-8 w-auto" />
+              <img src={pawfectLogo} alt="Pawfect" className="h-20 w-auto" />
               <nav className="hidden md:flex items-center gap-1">
                 <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
                   Browse
@@ -113,31 +86,35 @@ const Dashboard = () => {
         </div>
 
         {/* Profile Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="p-4 border rounded-lg bg-card">
-            <p className="text-sm text-muted-foreground mb-1">Age</p>
-            <p className="text-lg font-semibold">
-              {profile?.age || 'Not set'}
-            </p>
-          </div>
-
-          <div className="p-4 border rounded-lg bg-card">
-            <p className="text-sm text-muted-foreground mb-1">Gender</p>
-            <p className="text-lg font-semibold">
-              {profile?.gender || 'Not set'}
-            </p>
+            <p className="text-sm text-muted-foreground mb-2">Personal Info</p>
+            <div className="space-y-1">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Age</span>
+                <span className="text-sm font-medium">
+                  {profile?.age ? `${profile.age} years old` : 'Not set'}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Gender</span>
+                <span className="text-sm font-medium">
+                  {profile?.gender ? profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1).toLowerCase() : 'Not set'}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div className="p-4 border rounded-lg bg-card">
             <p className="text-sm text-muted-foreground mb-1">About</p>
-            <p className="text-sm line-clamp-2">
+            <p className="text-sm line-clamp-3">
               {profile?.about || 'Not set'}
             </p>
           </div>
 
           <div className="p-4 border rounded-lg bg-card">
             <p className="text-sm text-muted-foreground mb-1">Address</p>
-            <p className="text-sm line-clamp-2">
+            <p className="text-sm line-clamp-3">
               {profile?.address || 'Not set'}
             </p>
           </div>
@@ -181,39 +158,17 @@ const Dashboard = () => {
                 </Button>
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {dogs.map((dog) => (
-                  <div 
-                    key={dog.id} 
-                    className="border rounded-lg p-4 hover:border-primary/50 hover:shadow-sm transition-all cursor-pointer bg-card"
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {dogs.map((dog, index) => (
+                  <div
+                    key={dog.id}
+                    className="animate-fade-in h-full"
+                    style={{ animationDelay: `${index * 50}ms` }}
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Dog className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">{dog.name}</h3>
-                          <p className="text-sm text-muted-foreground">{dog.breed}</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-1 text-sm mb-4">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Age</span>
-                        <span className="font-medium">{dog.age} years</span>
-                      </div>
-                      {dog.about && (
-                        <p className="text-muted-foreground text-xs line-clamp-2 mt-2">
-                          {dog.about}
-                        </p>
-                      )}
-                    </div>
-                    
-                    <Button variant="outline" size="sm" className="w-full">
-                      View Profile
-                    </Button>
+                    <DogCard 
+                      dog={dog} 
+                      onClick={undefined}
+                    />
                   </div>
                 ))}
               </div>
