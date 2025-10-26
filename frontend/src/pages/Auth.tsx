@@ -5,17 +5,26 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from '@/hooks/use-toast';
 import heroImage from '@/assets/hero-dogs.jpg';
 import pawfectLogo from '@/assets/pawfect-logo.png';
+import { useOwnerProfile } from '@/hooks/useOwnerProfile';
 
 const Auth = () => {
   const navigate = useNavigate();
   const { signInWithGoogle, user, loading } = useAuth();
   const { toast } = useToast();
+  const { profile, loading: profileLoading } = useOwnerProfile();
 
   useEffect(() => {
-    if (!loading && user) {
-      navigate('/owner-onboarding');
+    // Only decide after both auth and profile states are ready
+    if (loading || profileLoading) return;
+    if (!user) return;
+
+    // If profile exists and has address, route to dashboard, else onboarding
+    if (profile?.address) {
+      navigate('/dashboard', { replace: true });
+    } else {
+      navigate('/owner-onboarding', { replace: true });
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, profile, profileLoading, navigate]);
 
   const handleGoogleLogin = async () => {
     const { error } = await signInWithGoogle();
