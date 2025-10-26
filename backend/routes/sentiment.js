@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { spawn } = require('child_process');
 const path = require('path');
+const { analyzeSentimentJS } = require('../lib/sentiment');
 
 // POST /api/sentiment - Analyze sentiment of review texts
 router.post('/', async (req, res) => {
@@ -63,8 +64,10 @@ if __name__ == "__main__":
       }
 
       if (code !== 0) {
-        console.error('Python script error:', error);
-        return res.status(500).json({ error: 'Sentiment analysis failed', details: error });
+        console.warn('Python script failed, falling back to JavaScript sentiment analysis');
+        // Fallback to JavaScript sentiment analysis
+        const jsResult = analyzeSentimentJS(reviews);
+        return res.json(jsResult);
       }
 
       try {
@@ -77,8 +80,9 @@ if __name__ == "__main__":
           count: sentimentScores.length
         });
       } catch (parseError) {
-        console.error('Failed to parse Python output:', parseError);
-        res.status(500).json({ error: 'Failed to parse sentiment analysis results' });
+        console.error('Failed to parse Python output, falling back to JavaScript:', parseError);
+        const jsResult = analyzeSentimentJS(reviews);
+        res.json(jsResult);
       }
     });
 
