@@ -18,7 +18,7 @@ class CompatibilityResult:
     dog2_id: str
     cosine_similarity: float
     is_compatible: bool
-    compatibility_threshold: float = 0.75
+    compatibility_threshold: float = 0.85
 
 
 class DogCompatibilityCalculator:
@@ -26,12 +26,12 @@ class DogCompatibilityCalculator:
     Calculates compatibility between dogs using cosine similarity of their vector embeddings.
     """
     
-    def __init__(self, compatibility_threshold: float = 0.75):
+    def __init__(self, compatibility_threshold: float = 0.85):
         """
         Initialize the compatibility calculator.
         
         Args:
-            compatibility_threshold: Minimum cosine similarity for compatibility (default: 0.75)
+            compatibility_threshold: Minimum cosine similarity for compatibility (default: 0.85)
         """
         self.compatibility_threshold = compatibility_threshold
         self.embedder = DogVectorEmbedder()
@@ -201,7 +201,7 @@ class DogCompatibilityCalculator:
 # Example usage and testing
 if __name__ == "__main__":
     # Create compatibility calculator
-    calculator = DogCompatibilityCalculator(compatibility_threshold=0.75)
+    calculator = DogCompatibilityCalculator(compatibility_threshold=0.85)
     
     # Example dog traits
     dog1_traits = DogTraits(
