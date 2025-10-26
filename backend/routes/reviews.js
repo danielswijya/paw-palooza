@@ -53,6 +53,12 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { rating, dog_id, owner_id, description } = req.body;
+    
+    // Validate required fields
+    if (!rating || !dog_id || !owner_id) {
+      return res.status(400).json({ error: 'Missing required fields: rating, dog_id, owner_id' });
+    }
+    
     const { data, error } = await supabase
       .from('reviews')
       .insert([
@@ -61,10 +67,18 @@ router.post('/', async (req, res) => {
       .select()
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('Review insert error:', error);
+      // Check if it's a unique constraint violation
+      if (error.message && error.message.includes('unique_reviewer_per_dog')) {
+        return res.status(409).json({ error: 'You have already reviewed this dog. You can only review once.' });
+      }
+      throw error;
+    }
     res.status(201).json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Error creating review:', error);
+    res.status(500).json({ error: error.message || 'Failed to create review' });
   }
 });
 

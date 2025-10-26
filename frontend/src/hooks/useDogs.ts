@@ -47,7 +47,11 @@ export const useDogs = () => {
       const dogs: DogProfile[] = (data || []).map((dog, index) => ({
         id: dog.id,
         name: dog.name || 'Unknown',
-        images: [mockImages[index % mockImages.length]], // Cycle through mock images
+        images: dog.image_url && Array.isArray(dog.image_url) && dog.image_url.length > 0
+          ? dog.image_url
+          : dog.image_url && typeof dog.image_url === 'string'
+          ? [dog.image_url]
+          : [mockImages[index % mockImages.length]], // Use uploaded images or cycle through mock images
         location: mockLocations[index % mockLocations.length], // Cycle through mock locations
         bio: dog.about || '',
         traits: {
@@ -100,6 +104,9 @@ export const useDog = (id: string) => {
       if (error) throw error;
       if (!data) return null;
 
+      console.log('Fetched dog from database:', data);
+      console.log('Image URLs from database:', data.image_url);
+
       // Get a consistent mock image and location based on the dog's ID
       const imageIndex = parseInt(id.replace(/\D/g, '')) % mockImages.length;
       const locationIndex = parseInt(id.replace(/\D/g, '')) % mockLocations.length;
@@ -107,7 +114,11 @@ export const useDog = (id: string) => {
       const dog: DogProfile = {
         id: data.id,
         name: data.name || 'Unknown',
-        images: [mockImages[imageIndex]],
+        images: data.image_url && Array.isArray(data.image_url) && data.image_url.length > 0
+          ? data.image_url
+          : data.image_url && typeof data.image_url === 'string'
+          ? [data.image_url]
+          : [mockImages[imageIndex]],
         location: mockLocations[locationIndex],
         bio: data.about || '',
         traits: {

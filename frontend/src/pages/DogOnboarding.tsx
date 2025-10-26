@@ -92,7 +92,7 @@ const DogOnboarding = () => {
         sociability: dogData.dogSociability,
         temperament: dogData.temperament,
         about: dogData.about,
-        image_url: images.length > 0 ? images[0] : null, // Save the first image URL
+        image_url: images.length > 0 ? images : null, // Save the array of image URLs
       });
 
       if (error) throw error;
@@ -204,11 +204,11 @@ const DogOnboarding = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Upload Images (up to 5)</Label>
+                  <Label>Upload Images (up to 3)</Label>
                   <ImageUpload 
                     images={images} 
                     onImagesChange={setImages}
-                    maxImages={5}
+                    maxImages={3}
                   />
                 </div>
               </div>

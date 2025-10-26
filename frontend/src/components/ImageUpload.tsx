@@ -10,7 +10,7 @@ interface ImageUploadProps {
   maxImages?: number;
 }
 
-const ImageUpload = ({ images, onImagesChange, maxImages = 5 }: ImageUploadProps) => {
+const ImageUpload = ({ images, onImagesChange, maxImages = 3 }: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
