@@ -1,9 +1,13 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { 
   MapPin, 
   Heart, 
@@ -22,11 +26,19 @@ import { toast } from 'sonner';
 import pawfectLogo from '@/assets/pawfect-logo.png';
 import { useDog } from '@/hooks/useDogs';
 import GoogleMap from '@/components/GoogleMap';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useOwnerProfile } from '@/hooks/useOwnerProfile';
 
 const DogProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: dog, isLoading } = useDog(id || '');
+  const { user } = useAuth();
+  const { profile: ownerProfile } = useOwnerProfile();
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewDescription, setReviewDescription] = useState('');
   
   if (isLoading) {
     return (
@@ -64,6 +76,47 @@ const DogProfile = () => {
 
   const handleShare = () => {
     toast.success('Link copied to clipboard!');
+  };
+
+  const handleSubmitReview = async () => {
+    if (!user) {
+      toast.error('Please log in to submit a review');
+      navigate('/auth');
+      return;
+    }
+
+    if (!ownerProfile) {
+      toast.error('Please complete your profile first');
+      return;
+    }
+
+    if (rating === 0) {
+      toast.error('Please select a rating');
+      return;
+    }
+
+    if (!reviewDescription.trim()) {
+      toast.error('Please write a review');
+      return;
+    }
+
+    const { error } = await supabase.from('reviews').insert({
+      dog_id: dog?.id,
+      owner_id: ownerProfile.id,
+      rating,
+      description: reviewDescription,
+    });
+
+    if (error) {
+      toast.error('Failed to submit review');
+      console.error(error);
+      return;
+    }
+
+    toast.success('Review submitted successfully!');
+    setIsReviewDialogOpen(false);
+    setRating(0);
+    setReviewDescription('');
   };
 
   return (
@@ -340,9 +393,57 @@ const DogProfile = () => {
                 ))}
               </div>
 
-              <button className="border border-foreground px-6 py-3 rounded-lg font-semibold hover:bg-muted transition-colors">
-                Show all 25 reviews
-              </button>
+              <div className="flex gap-4">
+                <button className="border border-foreground px-6 py-3 rounded-lg font-semibold hover:bg-muted transition-colors">
+                  Show all 25 reviews
+                </button>
+                
+                <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="px-6 py-3 font-semibold">
+                      Add Review
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Write a review for {dog.name}</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label>Rating</Label>
+                        <div className="flex gap-2">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              onClick={() => setRating(star)}
+                              className="focus:outline-none transition-transform hover:scale-110"
+                            >
+                              <Star
+                                className={`w-8 h-8 ${
+                                  star <= rating ? 'fill-yellow-400 text-yellow-400' : 'text-muted-foreground'
+                                }`}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="review">Your Review</Label>
+                        <Textarea
+                          id="review"
+                          placeholder="Share your experience with this dog..."
+                          value={reviewDescription}
+                          onChange={(e) => setReviewDescription(e.target.value)}
+                          rows={5}
+                        />
+                      </div>
+                      <Button onClick={handleSubmitReview} className="w-full">
+                        Submit Review
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
             </div>
 
             <Separator />
