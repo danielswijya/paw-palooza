@@ -14,6 +14,7 @@ export interface OwnerProfile {
   state?: string;
   lat?: number;
   lng?: number;
+  address?: string;
 }
 
 export const useOwnerProfile = () => {

@@ -4,7 +4,7 @@ import { userLocation } from '@/data/mockDogs';
 import DogCard from '@/components/DogCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { User, Settings, Search, LogIn, LogOut, ClipboardList, MessageSquare, Heart } from 'lucide-react';
+import { User, Settings, Search, LogIn, LogOut, ClipboardList, MessageSquare, Heart, PlusCircle } from 'lucide-react';
 import { calculateDistance } from '@/lib/distance';
 import { DogProfile } from '@/types/dog';
 import {
@@ -130,6 +130,10 @@ const Browse = () => {
                       <DropdownMenuItem onClick={() => navigate('/dashboard')}>
                         <ClipboardList className="w-4 h-4 mr-2" />
                         Dashboard
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/add-dog')}>
+                        <PlusCircle className="w-4 h-4 mr-2" />
+                        Add Dog
                       </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Settings className="w-4 h-4 mr-2" />
