@@ -21,6 +21,7 @@ import { formatDistance } from '@/lib/distance';
 import { toast } from 'sonner';
 import pawfectLogo from '@/assets/pawfect-logo.png';
 import { useDog } from '@/hooks/useDogs';
+import GoogleMap from '@/components/GoogleMap';
 
 const DogProfile = () => {
   const { id } = useParams();
@@ -348,17 +349,26 @@ const DogProfile = () => {
 
             {/* Location */}
             <div className="space-y-4">
-              <h3 className="text-xl font-semibold">Places that fit!</h3>
+              <h3 className="text-xl font-semibold">Where you'll find {dog.name}</h3>
               <div className="flex items-start gap-2">
                 <MapPin className="w-5 h-5 mt-1 flex-shrink-0" />
                 <div>
                   <p className="font-semibold">{dog.location.city}, {dog.location.state}</p>
                   <p className="text-muted-foreground text-sm">{formatDistance(distance)} away</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    📍 Location shown within 0.5km radius for privacy
+                  </p>
                 </div>
               </div>
-              <div className="bg-muted rounded-xl h-[400px] flex items-center justify-center">
-                <p className="text-muted-foreground">Map view</p>
-              </div>
+              <GoogleMap 
+                lat={dog.location.lat} 
+                lng={dog.location.lng} 
+                dogName={dog.name}
+                className="w-full h-[400px] rounded-xl"
+                radiusMeters={500}
+                maxZoom={15}
+                zoom={13}
+              />
             </div>
           </div>
 

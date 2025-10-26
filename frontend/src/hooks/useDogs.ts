@@ -8,13 +8,14 @@ import dog3 from '@/assets/dog-3.jpg';
 // Mock images for dogs
 const mockImages = [dog1, dog2, dog3];
 
-// Mock locations for dogs (Boston area)
+// Mock locations for dogs (Cambridge, MA area)
 const mockLocations = [
-  { city: 'Cambridge', state: 'MA', lat: 42.3736, lng: -71.1097 },
-  { city: 'Boston', state: 'MA', lat: 42.3505, lng: -71.0756 },
-  { city: 'Somerville', state: 'MA', lat: 42.3876, lng: -71.0995 },
-  { city: 'Brookline', state: 'MA', lat: 42.3318, lng: -71.1212 },
-  { city: 'Newton', state: 'MA', lat: 42.3370, lng: -71.2092 },
+  { city: 'Cambridge', state: 'MA', lat: 42.3736, lng: -71.1097 }, // Harvard Square
+  { city: 'Cambridge', state: 'MA', lat: 42.3656, lng: -71.1044 }, // MIT area
+  { city: 'Cambridge', state: 'MA', lat: 42.3756, lng: -71.1189 }, // Porter Square
+  { city: 'Cambridge', state: 'MA', lat: 42.3689, lng: -71.1234 }, // Davis Square area
+  { city: 'Cambridge', state: 'MA', lat: 42.3800, lng: -71.1000 }, // Central Square
+  { city: 'Cambridge', state: 'MA', lat: 42.3700, lng: -71.1100 }, // Kendall Square
 ];
 
 export const useDogs = () => {

@@ -75,6 +75,31 @@ python test_compatibility.py
 python compatibilitywithReviewsandRatings.py
 ```
 
+## Google Maps Integration
+
+To enable Google Maps on dog profile pages:
+
+1. **Get a Google Maps API Key:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/google/maps-apis)
+   - Create a new project or select existing one
+   - Enable the "Maps JavaScript API"
+   - Create credentials (API Key)
+   - Restrict the API key to your domain for security
+
+2. **Add the API Key:**
+   ```sh
+   # Create .env file in frontend directory
+   echo "VITE_GOOGLE_MAPS_API_KEY=your_api_key_here" > frontend/.env
+   ```
+
+3. **Install Dependencies:**
+   ```sh
+   cd frontend
+   npm install @googlemaps/js-api-loader
+   ```
+
+The map will show the exact location of each dog with a marker. For now, all dogs are set to Cambridge, MA coordinates.
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).
