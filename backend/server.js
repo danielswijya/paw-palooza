@@ -65,13 +65,17 @@ app.get('/api/dogs-with-owner', async (req, res) => {
   }
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📚 API Documentation:`);
-  console.log(`   GET    /health - Health check`);
-  console.log(`   GET    /api/owners - Get all owners`);
-  console.log(`   GET    /api/dogs - Get all dogs`);
-  console.log(`   GET    /api/reviews - Get all reviews`);
-  console.log(`   GET    /api/breeds - Get all breeds`);
-});
+// Start server (only in local/dev). In Vercel, export the app as a serverless function.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📚 API Documentation:`);
+    console.log(`   GET    /health - Health check`);
+    console.log(`   GET    /api/owners - Get all owners`);
+    console.log(`   GET    /api/dogs - Get all dogs`);
+    console.log(`   GET    /api/reviews - Get all reviews`);
+    console.log(`   GET    /api/breeds - Get all breeds`);
+  });
+}
+
+module.exports = app;
