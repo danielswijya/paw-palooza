@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/hooks/useAuth';
 import { useOwnerProfile } from '@/hooks/useOwnerProfile';
 import { supabase } from '@/integrations/supabase/client';
-import { PlusCircle, Dog, LogOut, User, Settings } from 'lucide-react';
+import { PlusCircle, Dog, LogOut } from 'lucide-react';
 import pawfectLogo from '@/assets/pawfect-logo.png';
 
 interface DogProfile {
@@ -30,7 +30,7 @@ const Dashboard = () => {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (!profileLoading && profile && (!profile.city || !profile.state)) {
+    if (!profileLoading && profile && !profile.address) {
       navigate('/owner-onboarding');
     }
   }, [profile, profileLoading, navigate]);
@@ -112,40 +112,34 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Stats Bar */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="flex items-center gap-4 p-4 border rounded-lg bg-card">
-            <div className="p-3 rounded-lg bg-muted">
-              <Dog className="h-5 w-5 text-foreground" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Your Dogs</p>
-              <p className="text-2xl font-bold">{dogs.length}</p>
-            </div>
+        {/* Profile Info */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <div className="p-4 border rounded-lg bg-card">
+            <p className="text-sm text-muted-foreground mb-1">Age</p>
+            <p className="text-lg font-semibold">
+              {profile?.age || 'Not set'}
+            </p>
           </div>
 
-          <div className="flex items-center gap-4 p-4 border rounded-lg bg-card">
-            <div className="p-3 rounded-lg bg-muted">
-              <User className="h-5 w-5 text-foreground" />
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Location</p>
-              <p className="text-lg font-semibold">
-                {profile?.city}, {profile?.state}
-              </p>
-            </div>
+          <div className="p-4 border rounded-lg bg-card">
+            <p className="text-sm text-muted-foreground mb-1">Gender</p>
+            <p className="text-lg font-semibold">
+              {profile?.gender || 'Not set'}
+            </p>
           </div>
 
-          <div className="flex items-center gap-4 p-4 border rounded-lg bg-card">
-            <div className="p-3 rounded-lg bg-muted">
-              <Settings className="h-5 w-5 text-foreground" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm text-muted-foreground mb-2">Profile Settings</p>
-              <Button variant="outline" size="sm">
-                Edit Profile
-              </Button>
-            </div>
+          <div className="p-4 border rounded-lg bg-card">
+            <p className="text-sm text-muted-foreground mb-1">About</p>
+            <p className="text-sm line-clamp-2">
+              {profile?.about || 'Not set'}
+            </p>
+          </div>
+
+          <div className="p-4 border rounded-lg bg-card">
+            <p className="text-sm text-muted-foreground mb-1">Address</p>
+            <p className="text-sm line-clamp-2">
+              {profile?.address || 'Not set'}
+            </p>
           </div>
         </div>
 

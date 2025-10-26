@@ -34,11 +34,11 @@ const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) =
       spotlightColor="rgba(255, 127, 80, 0.18)"
     >
       <Card 
-        className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer relative"
+        className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer relative h-full flex flex-col"
         onClick={onClick}
       >
       {/* Image */}
-      <div className="relative w-full aspect-[4/3] overflow-hidden">
+      <div className="relative w-full aspect-[4/3] overflow-hidden flex-shrink-0">
         <img
           src={dog.images[0]}
           alt={`${dog.name}, ${dog.traits.age} year old ${dog.traits.breed}`}
@@ -55,19 +55,19 @@ const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) =
       </div>
 
       {/* Content */}
-      <div className="p-3 space-y-2">
+      <div className="p-3 space-y-2 flex-1 flex flex-col">
         {/* Name, Age, and Location */}
-        <div>
-          <h3 className="text-base font-bold mb-0.5 line-clamp-1">
+        <div className="mb-2">
+          <h3 className="text-base font-bold mb-1 line-clamp-1">
             {dog.name}, {dog.traits.age}
           </h3>
-          <div className="flex items-center text-muted-foreground text-xs">
+          <div className="flex items-center text-muted-foreground text-xs mb-2">
             <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
             <span className="line-clamp-1">
               {dog.location.city}, {dog.location.state}
             </span>
           </div>
-          <div className={`flex items-center text-xs mt-1 px-2 py-1 rounded-full ${matchColor.bg}`}>
+          <div className={`flex items-center text-xs px-2 py-1 rounded-full w-fit ${matchColor.bg}`}>
             <Heart className={`w-3 h-3 mr-1 flex-shrink-0 ${matchColor.icon}`} />
             <span className={`font-semibold ${matchColor.text}`}>
               {compatibilityScore ? `${(compatibilityScore * 100).toFixed(1)}% Compatible` : `${matchPercentage}% Match`}
@@ -75,13 +75,8 @@ const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) =
           </div>
         </div>
 
-        {/* Bio */}
-        <p className="text-xs text-foreground/70 line-clamp-2 leading-relaxed">
-          {dog.bio}
-        </p>
-
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 pt-1">
+        <div className="flex flex-wrap gap-1.5 mt-auto">
           <Badge variant="outline" className="text-xs">
             {dog.traits.breed}
           </Badge>
@@ -91,10 +86,13 @@ const DogCard = ({ dog, distance, compatibilityScore, onClick }: DogCardProps) =
           <Badge variant="outline" className="text-xs">
             {dog.traits.sex}
           </Badge>
+          <Badge variant="outline" className="text-xs">
+            Neutered {dog.traits.neutered ? '✓' : '✗'}
+          </Badge>
         </div>
 
         {/* Ratings Preview */}
-        <div className="flex gap-2 pt-1 text-xs">
+        <div className="flex gap-2 text-xs mt-2">
           <div className="flex items-center gap-0.5">
             <span className="text-muted-foreground text-xs">🐕</span>
             <span className="font-medium">{dog.traits.dogSociability}/5</span>

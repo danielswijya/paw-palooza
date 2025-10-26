@@ -30,6 +30,7 @@ export interface DogProfile {
     age?: number;
     gender?: string;
     about?: string;
+    address?: string;
   };
 }
 

@@ -12,6 +12,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useOwnerProfile } from '@/hooks/useOwnerProfile';
 import { useToast } from '@/hooks/use-toast';
 import pawfectLogo from '@/assets/pawfect-logo.png';
+import LocationAutocomplete from '@/components/LocationAutocomplete';
 
 const OwnerOnboarding = () => {
   const navigate = useNavigate();
@@ -27,8 +28,7 @@ const OwnerOnboarding = () => {
     age: '',
     gender: '',
     about: '',
-    city: '',
-    state: '',
+    address: '',
   });
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const OwnerOnboarding = () => {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (profile && profile.city && profile.state) {
+    if (profile && profile.address) {
       navigate('/dashboard');
     }
   }, [profile, navigate]);
@@ -50,8 +50,7 @@ const OwnerOnboarding = () => {
         age: profile.age?.toString() || '',
         gender: profile.gender || '',
         about: profile.about || '',
-        city: profile.city || '',
-        state: profile.state || '',
+        address: profile.address || '',
       });
     }
   }, [profile]);
@@ -60,14 +59,23 @@ const OwnerOnboarding = () => {
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
+      // Validate required fields
+      if (!formData.name || !formData.address) {
+        toast({
+          title: 'Validation Error',
+          description: 'Please fill in all required fields (Name, Address)',
+          variant: 'destructive',
+        });
+        return;
+      }
+
       // Complete onboarding
       const { error } = await updateProfile({
         name: formData.name,
         age: formData.age ? parseInt(formData.age) : undefined,
         gender: formData.gender,
         about: formData.about,
-        city: formData.city,
-        state: formData.state,
+        address: formData.address,
       });
 
       if (error) {
@@ -179,31 +187,21 @@ const OwnerOnboarding = () => {
 
             {step === 2 && (
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="city">City *</Label>
-                    <Input
-                      id="city"
-                      placeholder="Boston"
-                      value={formData.city}
-                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="state">State *</Label>
-                    <Input
-                      id="state"
-                      placeholder="MA"
-                      value={formData.state}
-                      onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    />
-                  </div>
-                </div>
+                <LocationAutocomplete
+                  value={formData.address}
+                  onChange={(location) => {
+                    setFormData({
+                      ...formData,
+                      address: location.address,
+                    });
+                  }}
+                  label="Your Location *"
+                  placeholder="Enter your full address or just city name..."
+                />
 
                 <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
                   <p className="text-sm text-foreground">
-                    📍 Your location helps us show you dogs in your area
+                    📍 Enter any address - from a specific street address like "175 Freeman St, Boston" to just a city name like "Boston". We'll extract the city and state automatically.
                   </p>
                 </div>
               </div>

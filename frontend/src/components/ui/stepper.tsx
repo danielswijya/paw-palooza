@@ -9,8 +9,8 @@ interface StepperProps {
 
 export const Stepper = ({ steps, currentStep, className }: StepperProps) => {
   return (
-    <div className={cn('w-full', className)}>
-      <div className="flex items-center justify-between">
+    <div className={cn('w-full flex justify-center', className)}>
+      <div className="flex items-center justify-between max-w-2xl w-full">
         {steps.map((step, index) => {
           const stepNumber = index + 1;
           const isCompleted = stepNumber < currentStep;

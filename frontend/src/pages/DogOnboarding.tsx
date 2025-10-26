@@ -15,6 +15,7 @@ import { useOwnerProfile } from '@/hooks/useOwnerProfile';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import pawfectLogo from '@/assets/pawfect-logo.png';
+import ImageUpload from '@/components/ImageUpload';
 
 const DogOnboarding = () => {
   const navigate = useNavigate();
@@ -22,8 +23,8 @@ const DogOnboarding = () => {
   const { profile, loading: profileLoading } = useOwnerProfile();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-  const totalSteps = 3;
-  const stepLabels = ['Basic Info', 'Personality', 'Location'];
+  const totalSteps = 2;
+  const stepLabels = ['Basic Info', 'Personality & Health'];
 
   const [dogData, setDogData] = useState({
     name: '',
@@ -38,6 +39,7 @@ const DogOnboarding = () => {
     temperament: 3,
     about: '',
   });
+  const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -46,7 +48,7 @@ const DogOnboarding = () => {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (!profileLoading && profile && (!profile.city || !profile.state)) {
+    if (!profileLoading && profile && !profile.address) {
       navigate('/owner-onboarding');
     }
   }, [profile, profileLoading, navigate]);
@@ -68,6 +70,16 @@ const DogOnboarding = () => {
   const handleComplete = async () => {
     if (!profile) return;
 
+    // Validate required fields
+    if (!dogData.name || !dogData.breed || !dogData.age || !dogData.weight || !dogData.sex || !dogData.neutered || !dogData.vaccinated) {
+      toast({
+        title: 'Validation Error',
+        description: 'Please fill in all required fields',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase.from('dogs').insert({
         owner_id: profile.id,
@@ -80,17 +92,14 @@ const DogOnboarding = () => {
         sociability: dogData.dogSociability,
         temperament: dogData.temperament,
         about: dogData.about,
-        city: profile.city,
-        state: profile.state,
-        lat: profile.lat,
-        lng: profile.lng,
+        image_url: images.length > 0 ? images : null, // Save the array of image URLs
       });
 
       if (error) throw error;
 
       toast({
-        title: 'Success!',
-        description: 'Dog profile created successfully',
+        title: 'Success! 🎉',
+        description: 'Dog profile created successfully!',
       });
       navigate('/dashboard');
     } catch (error) {
@@ -128,12 +137,10 @@ const DogOnboarding = () => {
             <CardTitle className="text-2xl">
               {step === 1 && "Tell us about your dog"}
               {step === 2 && "Dog's personality & health"}
-              {step === 3 && "Final details"}
             </CardTitle>
             <CardDescription>
               {step === 1 && "Basic information about your furry friend"}
               {step === 2 && "Help us find the perfect playmates"}
-              {step === 3 && "Almost done!"}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -195,6 +202,15 @@ const DogOnboarding = () => {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div className="space-y-2">
+                  <Label>Upload Images (up to 3)</Label>
+                  <ImageUpload 
+                    images={images} 
+                    onImagesChange={setImages}
+                    maxImages={3}
+                  />
+                </div>
               </div>
             )}
 
@@ -251,27 +267,6 @@ const DogOnboarding = () => {
 
                 <div className="space-y-3 p-5 rounded-lg bg-muted/30">
                   <div className="flex items-center justify-between mb-2">
-                    <Label className="text-sm font-medium">Sociability with Humans</Label>
-                    <Badge variant="secondary" className="font-bold text-lg px-3 py-1">
-                      {dogData.humanSociability}/5
-                    </Badge>
-                  </div>
-                  <Slider
-                    value={[dogData.humanSociability]}
-                    onValueChange={([value]) => setDogData({ ...dogData, humanSociability: value })}
-                    min={1}
-                    max={5}
-                    step={1}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>Shy</span>
-                    <span>Very friendly</span>
-                  </div>
-                </div>
-
-                <div className="space-y-3 p-5 rounded-lg bg-muted/30">
-                  <div className="flex items-center justify-between mb-2">
                     <Label className="text-sm font-medium">Overall Temperament</Label>
                     <Badge variant="secondary" className="font-bold text-lg px-3 py-1">
                       {dogData.temperament}/5
@@ -290,11 +285,7 @@ const DogOnboarding = () => {
                     <span>Very calm</span>
                   </div>
                 </div>
-              </div>
-            )}
 
-            {step === 3 && (
-              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="about">About Your Dog</Label>
                   <Textarea
@@ -304,12 +295,6 @@ const DogOnboarding = () => {
                     onChange={(e) => setDogData({ ...dogData, about: e.target.value })}
                     rows={5}
                   />
-                </div>
-
-                <div className="p-4 bg-muted/50 rounded-lg">
-                  <p className="text-sm text-muted-foreground">
-                    📸 Photo uploads will be available soon
-                  </p>
                 </div>
               </div>
             )}
